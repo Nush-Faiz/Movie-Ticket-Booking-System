@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="py-4">
+    <h1 class="text-center mb-4">Now Showing</h1>
+    <div class="row">
+        {% for movie in movies %}
+        <div class="col-md-4 mb-4">
+            <div class="card movie-card shadow">
+                {% if movie.poster %}
+                <img src="{{ movie.poster.url }}" class="card-img-top movie-poster" alt="{{ movie.title }}">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ movie.title }}</h5>
+                    <p class="card-text text-muted">
+                        {{ movie.duration }} min | Rating: {{ movie.rating }}
+                    </p>
+                    <p class="card-text">{{ movie.description|truncatechars:100 }}</p>
+                    <a href="{% url 'movie_detail' movie.id %}" class="btn btn-primary">View Showtimes</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
