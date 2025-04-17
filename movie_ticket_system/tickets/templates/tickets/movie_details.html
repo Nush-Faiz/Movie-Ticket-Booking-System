@@ -1,0 +1,34 @@
+{% extends 'tickets/base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-4">
+        {% if movie.poster %}
+        <img src="{{ movie.poster.url }}" class="img-fluid rounded movie-poster">
+        {% endif %}
+    </div>
+    <div class="col-md-8">
+        <h1>{{ movie.title }}</h1>
+        <p class="text-muted">{{ movie.rating }} | {{ movie.duration }} mins</p>
+        <p>{{ movie.description }}</p>
+    </div>
+</div>
+
+<h3>Available Showtimes</h3>
+<div class="list-group">
+    {% for showtime in showtimes %}
+    <div class="list-group-item">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h5>{{ showtime.theater.name }}</h5>
+                <p class="mb-1">{{ showtime.start_time|date:"D, M j, Y" }} at {{ showtime.start_time|time:"g:i A" }}</p>
+                <small class="text-muted">Available seats: {{ showtime.available_seats }}</small>
+            </div>
+            <a href="{% url 'book_ticket' showtime.id %}" class="btn btn-success">Book Now</a>
+        </div>
+    </div>
+    {% empty %}
+    <div class="alert alert-warning">No showtimes available</div>
+    {% endfor %}
+</div>
+{% endblock %}
