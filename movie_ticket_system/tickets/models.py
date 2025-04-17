@@ -6,7 +6,17 @@ class Movie(models.Model):
     description = models.TextField()
     duration = models.IntegerField()
     rating = models.CharField(max_length=5)
-    poster = models.ImageField(upload_to='posters/', blank=True)
+    poster = models.ImageField(upload_to='media/', blank=True)
+
+    def formatted_duration(self):
+        hours = self.duration // 60
+        minutes = self.duration % 60
+        if hours > 0 and minutes > 0:
+            return f"{hours}h {minutes}m"
+        elif hours > 0:
+            return f"{hours}h"
+        else:
+            return f"{minutes}m"
 
     def _str_(self):
         return self.title

@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('description', models.TextField()),
                 ('duration', models.IntegerField()),
                 ('rating', models.CharField(max_length=5)),
-                ('poster', models.ImageField(blank=True, upload_to='posters/')),
+                ('poster', models.ImageField(blank=True, upload_to='media/')),
             ],
         ),
         migrations.CreateModel(
