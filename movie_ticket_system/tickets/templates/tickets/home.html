@@ -13,7 +13,7 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ movie.title }}</h5>
                     <p class="card-text text-muted">
-                        {{ movie.duration }} min | Rating: {{ movie.rating }}
+                        {{ movie.formatted_duration }}  | Rating: {{ movie.rating }} | {{ movie.language }}
                     </p>
                     <p class="card-text">{{ movie.description|truncatechars:100 }}</p>
                     <a href="{% url 'movie_detail' movie.id %}" class="btn btn-primary">View Showtimes</a>
