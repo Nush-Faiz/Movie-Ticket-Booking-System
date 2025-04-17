@@ -6,7 +6,7 @@ class Movie(models.Model):
     description = models.TextField()
     duration = models.IntegerField()
     rating = models.CharField(max_length=5)
-    poster = models.ImageField(upload_to='posters/', blank=True)
+    poster = models.ImageField(upload_to='media/', blank=True)
 
     def _str_(self):
         return self.title
