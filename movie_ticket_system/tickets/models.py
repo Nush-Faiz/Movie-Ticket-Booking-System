@@ -29,7 +29,7 @@ class Showtime(models.Model):
         return f"{self.movie.title} at {self.theater.name}"
 
 class Booking(models.Model):
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, default='Guest User')
     email = models.EmailField(default='guest@example.com')
     phone = models.CharField(max_length=15, default='0000000000')
     showtime = models.ForeignKey(Showtime, on_delete=models.CASCADE)

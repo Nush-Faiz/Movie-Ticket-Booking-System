@@ -3,13 +3,13 @@ from .models import Movie, Showtime, Booking
 
 def home(request):
     movies = Movie.objects.all()
-    return render(request, 'home.html', {'movies': movies})
+    return render(request, 'tickets/home.html', {'movies': movies})
 
 
 def movie_detail(request, movie_id):
     movie = Movie.objects.get(id=movie_id)
     showtimes = Showtime.objects.filter(movie=movie)
-    return render(request, 'movie_detail.html', {'movie': movie, 'showtimes': showtimes})
+    return render(request, 'tickets/movie_details.html', {'movie': movie, 'showtimes': showtimes})
 
 
 def book_ticket(request, showtime_id):
@@ -30,6 +30,10 @@ def book_ticket(request, showtime_id):
             )
             showtime.available_seats -= seats
             showtime.save()
-            return redirect('home')
+            return redirect('booking_confirmation', booking_id=Booking.objects.latest('id').id)
 
-    return render(request, 'book_ticket.html', {'showtime': showtime})
+    return render(request, 'tickets/book_ticket.html', {'showtime': showtime})
+
+def booking_confirmation(request, booking_id):
+    booking = Booking.objects.get(id=booking_id)
+    return render(request, 'tickets/booking_confirmation.html', {'booking': booking})

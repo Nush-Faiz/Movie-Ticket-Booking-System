@@ -1,0 +1,35 @@
+{% extends 'tickets/base.html' %}
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Book Tickets for {{ showtime.movie.title }}</h2>
+    </div>
+    <div class="card-body">
+        <p><strong>Theater:</strong> {{ showtime.theater.name }}</p>
+        <p><strong>Showtime:</strong> {{ showtime.start_time }}</p>
+        <p><strong>Available Seats:</strong> {{ showtime.available_seats }}</p>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="name" class="form-label">Your Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Your Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            <div class="mb-3">
+                <label for="phone" class="form-label">Your Phone Number</label>
+                <input type="tel" class="form-control" id="phone" name="phone" required>
+            </div>
+            <div class="mb-3">
+                <label for="seats" class="form-label">Number of Seats</label>
+                <input type="number" class="form-control" id="seats" name="seats" min="1" max="{{ showtime.available_seats }}" value="1">
+            </div>
+            <button type="submit" class="btn btn-primary">Confirm Booking</button>
+            <a href="{% url 'movie_detail' showtime.movie.id %}" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
