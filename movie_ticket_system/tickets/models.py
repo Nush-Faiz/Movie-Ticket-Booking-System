@@ -6,6 +6,31 @@ class Movie(models.Model):
     description = models.TextField()
     duration = models.IntegerField()
     rating = models.CharField(max_length=5)
+    genre = models.CharField(max_length=50, choices=[
+        ('Action', 'Action'),
+        ('Animation', 'Animation'),
+        ('Biography', 'Biography'),
+        ('Drama', 'Drama'),
+        ('Horror', 'Horror'),
+        ('Thriller', 'Thriller'),
+    ],
+    default='Drama'
+    )
+    format = models.CharField(max_length=10, choices=[
+        ('2D', '2D'),
+        ('3D', '3D'),
+    ],
+    default = '2D'
+    )
+    language = models.CharField(max_length=20, choices=[
+        ('Chinese', 'Chinese'),
+        ('English', 'English'),
+        ('Hindi', 'Hindi'),
+        ('Sinhala', 'Sinhala'),
+        ('Tamil', 'Tamil'),
+    ],
+    default='English'
+    )
     poster = models.ImageField(upload_to='media/', blank=True)
 
     def formatted_duration(self):
