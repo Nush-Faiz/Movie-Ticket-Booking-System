@@ -16,7 +16,7 @@
                         {{ movie.formatted_duration }}  | Rating: {{ movie.rating }} | {{ movie.language }}
                     </p>
                     <p class="card-text">{{ movie.description|truncatechars:100 }}</p>
-                    <a href="{% url 'movie_detail' movie.id %}" class="btn btn-primary">View Showtimes</a>
+                    <a href="{% url 'movie_detail' movie.id %}" class="btn btn-primary">Book Tickets</a>
                 </div>
             </div>
         </div>
