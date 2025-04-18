@@ -2,7 +2,26 @@ from django.shortcuts import render, redirect
 from .models import Movie, Showtime, Booking
 
 def home(request):
+    genre = request.GET.get('genre')
+    format = request.GET.get('format')
+    language = request.GET.get('language')
+
     movies = Movie.objects.all()
+
+    if genre and genre != "All":
+        movies = movies.filter(genre=genre)
+    if format and format != "All":
+        movies = movies.filter(format=format)
+    if language and language != "All":
+        movies = movies.filter(language=language)
+
+    context = {
+        'movies': movies,
+        'selected_genre': genre or "All",
+        'selected_format': format or "All",
+        'selected_language': language or "All",
+    }
+
     return render(request, 'tickets/home.html', {'movies': movies})
 
 
