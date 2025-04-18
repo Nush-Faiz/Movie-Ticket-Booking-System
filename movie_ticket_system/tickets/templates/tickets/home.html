@@ -5,6 +5,7 @@
     <div class="row g-2">
         <div class="col-md-4">
             <select name="genre" class="form-select">
+                <option disabled {% if not selected_genre or selected_genre == "All" %}selected{% endif %}>Genre</option>
                 <option {% if selected_genre == "All" %}selected{% endif %}>All</option>
                 <option {% if selected_genre == "Action" %}selected{% endif %}>Action</option>
                 <option {% if selected_genre == "Animation" %}selected{% endif %}>Animation</option>
@@ -16,6 +17,7 @@
         </div>
         <div class="col-md-4">
             <select name="format" class="form-select">
+                <option disabled {% if not selected_format or selected_format == "All" %}selected{% endif %}>Format</option>
                 <option {% if selected_format == "All" %}selected{% endif %}>All</option>
                 <option {% if selected_format == "2D" %}selected{% endif %}>2D</option>
                 <option {% if selected_format == "3D" %}selected{% endif %}>3D</option>
@@ -23,6 +25,7 @@
         </div>
         <div class="col-md-4">
             <select name="language" class="form-select">
+                <option disabled {% if not selected_language or selected_language == "All" %}selected{% endif %}>Language</option>
                 <option {% if selected_language == "All" %}selected{% endif %}>All</option>
                 <option {% if selected_language == "Chinese" %}selected{% endif %}>Chinese</option>
                 <option {% if selected_language == "English" %}selected{% endif %}>English</option>
