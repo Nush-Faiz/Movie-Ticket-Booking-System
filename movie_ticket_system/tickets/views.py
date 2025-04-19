@@ -1,12 +1,18 @@
 from django.shortcuts import render, redirect
 from .models import Movie, Showtime, Booking
+from django.db.models import Q
 
 def home(request):
+    search_query = request.GET.get('search', '')
     genre = request.GET.get('genre')
     format = request.GET.get('format')
     language = request.GET.get('language')
 
+
     movies = Movie.objects.all()
+
+    if search_query:
+        movies = movies.filter(title__icontains=search_query)
 
     if genre and genre != "All":
         movies = movies.filter(genre=genre)
@@ -17,6 +23,7 @@ def home(request):
 
     context = {
         'movies': movies,
+        'search_query': search_query,
         'selected_genre': genre or "All",
         'selected_format': format or "All",
         'selected_language': language or "All",
