@@ -6,13 +6,14 @@
         <div class="col-md-1">
             <select name="genre" id="genre" class="form-select" onchange="this.form.submit()">
                 <option disabled {% if not selected_genre or selected_genre == "All" %}selected{% endif %}>Genre</option>
-                <option {% if selected_genre == "All" %}selected{% endif %}>All</option>
-                <option {% if selected_genre == "Action" %}selected{% endif %}>Action</option>
-                <option {% if selected_genre == "Animation" %}selected{% endif %}>Animation</option>
-                <option {% if selected_genre == "Biography" %}selected{% endif %}>Biography</option>
-                <option {% if selected_genre == "Drama" %}selected{% endif %}>Drama</option>
-                <option {% if selected_genre == "Horror" %}selected{% endif %}>Horror</option>
-                <option {% if selected_genre == "Thriller" %}selected{% endif %}>Thriller</option>
+                <option value="All"{% if selected_genre == "All" %}selected{% endif %}>All</option>
+                <option value="Action" {% if selected_genre == "Action" %}selected{% endif %}>Action</option>
+                <option value="Adventure" {% if selected_genre == "Adventure" %}selected{% endif %}>Adventure</option>
+                <option value="Animation"{% if selected_genre == "Animation" %}selected{% endif %}>Animation</option>
+                <option value="Biography"{% if selected_genre == "Biography" %}selected{% endif %}>Biography</option>
+                <option value="Drama"{% if selected_genre == "Drama" %}selected{% endif %}>Drama</option>
+                <option value="Horror"{% if selected_genre == "Horror" %}selected{% endif %}>Horror</option>
+                <option value="Thriller"{% if selected_genre == "Thriller" %}selected{% endif %}>Thriller</option>
             </select>
         </div>
         <div class="col-md-1">
