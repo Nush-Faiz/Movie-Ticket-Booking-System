@@ -9,11 +9,14 @@
           <input type="hidden" name="genre" value="{{ selected_genre }}">
           <input type="hidden" name="format" value="{{ selected_format }}">
           <input type="hidden" name="language" value="{{ selected_language }}">
+
+
           <div class="input-group">
+              <i class="bi bi-search search-icon"></i>
             <input
                 type="text"
                 name="search"
-                class="form-control form-control-lg border-0 shadow-sm"
+                class="form-control form-control-lg search-input"
                 placeholder="Search movies..."
                 value="{{ search_query }}"
                 style="border-radius: 30px; padding: 15px 25px;"
@@ -21,7 +24,7 @@
             <button class="btn btn-danger position-absolute end-0 top-50 translate-middle-y me-3"
                   type="submit"
                   style="background: none; border: none;">
-                <i class="bi bi-search fs-4"></i>
+                <i class="bi bi-arrow-right-circle fs-4"></i>
             </button>
           </div>
       </form>
