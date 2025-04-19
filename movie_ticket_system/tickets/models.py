@@ -8,6 +8,7 @@ class Movie(models.Model):
     rating = models.CharField(max_length=5)
     genre = models.CharField(max_length=50, choices=[
         ('Action', 'Action'),
+        ('Adventure', 'Adventure'),
         ('Animation', 'Animation'),
         ('Biography', 'Biography'),
         ('Drama', 'Drama'),
