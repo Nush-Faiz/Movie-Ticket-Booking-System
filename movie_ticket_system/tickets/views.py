@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .models import Movie, Showtime, Booking, SeatCategory
 from django.db.models import Q
 from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
 from django.contrib import messages
 
 def home(request):
@@ -62,6 +63,8 @@ def book_ticket(request, showtime_id):
         seat_category = SeatCategory.objects.get(id=seat_category_id)
 
         try:
+            validate_email(email)
+
             booking = Booking(
                 name=name,
                 email=email,
@@ -81,7 +84,9 @@ def book_ticket(request, showtime_id):
                 messages.error(request, 'Not enough available seats for this showtime.')
 
         except ValidationError as e:
-            if 'phone' in e.message_dict:
+            if 'email' in e.message_dict or 'email' in str(e):
+                messages.error(request, 'Please enter a valid email address')
+            elif 'phone' in e.message_dict:
                 messages.error(request, 'Phone number must be exactly 10 digits')
             else:
                 messages.error(request, 'There was an error with your booking. Please check your information.')
