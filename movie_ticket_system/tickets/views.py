@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect
 from .models import Movie, Showtime, Booking, SeatCategory
 from django.db.models import Q
+from django.core.exceptions import ValidationError
+from django.contrib import messages
 
 def home(request):
     search_query = request.GET.get('search', '')
@@ -59,8 +61,8 @@ def book_ticket(request, showtime_id):
         seat_category_id = request.POST.get('seat_category')
         seat_category = SeatCategory.objects.get(id=seat_category_id)
 
-        if seats <= showtime.available_seats:
-            Booking.objects.create(
+        try:
+            booking = Booking(
                 name=name,
                 email=email,
                 phone=phone,
@@ -68,9 +70,22 @@ def book_ticket(request, showtime_id):
                 seat_category=seat_category,
                 seats=seats
             )
-            showtime.available_seats -= seats
-            showtime.save()
-            return redirect('booking_confirmation', booking_id=Booking.objects.latest('id').id)
+            booking.full_clean()
+
+            if seats <= showtime.available_seats:
+                booking.save()
+                showtime.available_seats -= seats
+                showtime.save()
+                return redirect('booking_confirmation', booking_id=booking.id)
+            else:
+                messages.error(request, 'Not enough available seats for this showtime.')
+
+        except ValidationError as e:
+            if 'phone' in e.message_dict:
+                messages.error(request, 'Phone number must be exactly 10 digits')
+            else:
+                messages.error(request, 'There was an error with your booking. Please check your information.')
+
 
     return render(request, 'tickets/book_ticket.html', {'showtime': showtime,'seat_categories': seat_categories})
 
