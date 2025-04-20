@@ -23,7 +23,14 @@
                 <h5>{{ showtime.theater.name }}</h5>
                 <p class="mb-1">{{ showtime.start_time|date:"D, M j, Y" }} at {{ showtime.start_time|time:"g:i A" }}</p>
                 <small class="text-muted">Available seats: {{ showtime.available_seats }}</small>
-                <small class="text-muted d-block">Price: ${{ showtime.price }}</small>
+                <div class="mt-2">
+                    <small class="fw-bold">Seat Categories:</small>
+                    <ul class="list-unstyled">
+                        {% for category in showtime.theater.seat_categories.all %}
+                        <li>{{ category.name }} - Rs.{{ category.price }}</li>
+                        {% endfor %}
+                    </ul>
+                </div>
             </div>
              {% if showtime.is_available %}
                 <a href="{% url 'book_ticket' showtime.id %}" class="btn btn-success">Book Now</a>
