@@ -24,7 +24,15 @@
                 <p class="mb-1">{{ showtime.start_time|date:"D, M j, Y" }} at {{ showtime.start_time|time:"g:i A" }}</p>
                 <small class="text-muted">Available seats: {{ showtime.available_seats }}</small>
             </div>
-            <a href="{% url 'book_ticket' showtime.id %}" class="btn btn-success">Book Now</a>
+             {% if showtime.is_available %}
+                <a href="{% url 'book_ticket' showtime.id %}" class="btn btn-success">Book Now</a>
+             {% else %}
+                {% if showtime.start_time <= timezone.now %}
+                    <span class="badge bg-secondary">Showtime Passed</span>
+                {% else %}
+                    <span class="badge bg-danger">Sold Out</span>
+                {% endif %}
+            {% endif %}
         </div>
     </div>
     {% empty %}

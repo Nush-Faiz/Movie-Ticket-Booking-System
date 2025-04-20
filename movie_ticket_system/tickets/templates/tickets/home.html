@@ -78,7 +78,7 @@
 <div class="py-4">
     <h1 class="text-center mb-4">Now Showing</h1>
     <div class="row">
-        {% for movie in movies %}
+        {% for movie in now_showing %}
         <div class="col-md-4 mb-4">
             <div class="card movie-card shadow">
                 {% if movie.poster %}
@@ -97,4 +97,34 @@
         {% endfor %}
     </div>
 </div>
+
+<div class="py-4 mt-5 border-top">
+    <h1 class="text-center mb-4">Coming Soon</h1>
+    <div class="row">
+        {% for movie in upcoming %}
+        <div class="col-md-4 mb-4">
+            <div class="card movie-card shadow">
+                {% if movie.poster %}
+                <img src="{{ movie.poster.url }}" class="card-img-top movie-poster" alt="{{ movie.title }}" style="opacity: 0.8;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ movie.title }}</h5>
+                    <p class="card-text text-muted">
+                        Releases on {{ movie.release_date|date:"M d, Y" }}
+                    </p>
+                    <p class="card-text">{{ movie.description|truncatechars:100 }}</p>
+                    <button class="btn btn-outline-primary" disabled>
+                        Coming Soon
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center text-muted">
+            No upcoming movies scheduled
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
 {% endblock %}
