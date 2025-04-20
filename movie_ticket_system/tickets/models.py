@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.core.validators import RegexValidator
 
 
 class Movie(models.Model):
@@ -88,7 +89,16 @@ class Showtime(models.Model):
 class Booking(models.Model):
     name = models.CharField(max_length=100, default='Guest User')
     email = models.EmailField(default='guest@example.com')
-    phone = models.CharField(max_length=15, default='0000000000')
+    phone = models.CharField(max_length=15,
+                             default='0000000000',
+                             validators =[
+                                 RegexValidator(
+                                     regex=r'^\d{10}$',
+                                     message='Phone number must be 10 digits',
+                                     code='invalid_phone'
+                                 ),
+                             ]
+    )
     showtime = models.ForeignKey(Showtime, on_delete=models.CASCADE)
     seat_category = models.ForeignKey(SeatCategory, on_delete=models.CASCADE, null=True, blank=True)
     seats = models.IntegerField(default=1)
