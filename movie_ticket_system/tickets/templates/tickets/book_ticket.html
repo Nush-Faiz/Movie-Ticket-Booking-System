@@ -18,7 +18,9 @@
                 </div>
                 <div class="mb-3">
                     <label for="email" class="form-label">Your Email</label>
-                    <input type="email" class="form-control" id="email" name="email" required>
+                    <input type="email" class="form-control" id="email" name="email" required pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                       title="Please enter a valid email address (e.g., name@example.com)">
+                    <small class="text-muted">Example: name@example.com</small>
                 </div>
                 <div class="mb-3">
                     <label for="phone" class="form-label">Your Phone Number</label>
