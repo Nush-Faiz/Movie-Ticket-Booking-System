@@ -63,11 +63,20 @@ class Theater(models.Model):
     def _str_(self):
         return self.name
 
+class SeatCategory(models.Model):
+    name = models.CharField(max_length=50)
+    price = models.DecimalField(max_digits=6, decimal_places=2)
+    theater = models.ForeignKey(Theater, on_delete=models.CASCADE, related_name='seat_categories')
+
+    def __str__(self):
+        return f"{self.name} ({self.theater.name}) - Rs.{self.price}"
+
 class Showtime(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
     theater = models.ForeignKey(Theater, on_delete=models.CASCADE)
     start_time = models.DateTimeField()
     available_seats = models.IntegerField()
+
 
     @property
     def is_available(self):
@@ -81,10 +90,16 @@ class Booking(models.Model):
     email = models.EmailField(default='guest@example.com')
     phone = models.CharField(max_length=15, default='0000000000')
     showtime = models.ForeignKey(Showtime, on_delete=models.CASCADE)
+    seat_category = models.ForeignKey(SeatCategory, on_delete=models.CASCADE, null=True, blank=True)
     seats = models.IntegerField(default=1)
     booked_at = models.DateTimeField(auto_now_add=True)
+    total_price = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
 
-    def _str_(self):
-        return f"{self.name} booked {self.showtime.movie.title}"
+    def save(self, *args, **kwargs):
+        self.total_price = self.seat_category.price * self.seats
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return f"{self.name} booked {self.seats} {self.seat_category.name} seats for {self.showtime}"
 
 

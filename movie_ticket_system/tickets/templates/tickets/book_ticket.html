@@ -25,12 +25,40 @@
                     <input type="tel" class="form-control" id="phone" name="phone" required>
                 </div>
                 <div class="mb-3">
-                    <label for="seats" class="form-label">Number of Seats</label>
-                    <input type="number" class="form-control" id="seats" name="seats" min="1" max="{{ showtime.available_seats }}" value="1">
-                </div>
+                    <label for="seat_category" class="form-label">Seat Category</label>
+                <select class="form-select" id="seat_category" name="seat_category" required onchange="updatePrice()">
+                    {% for category in seat_categories %}
+                    <option value="{{ category.id }}" data-price="{{ category.price }}">
+                        {{ category.name }} - Rs.{{ category.price }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <label for="seats" class="form-label">Number of Seats</label>
+                <input type="number" class="form-control" id="seats" name="seats"
+                       min="1" max="{{ showtime.available_seats }}" value="1"
+                       onchange="updateTotal()">
+            </div>
+            <div class="mb-3">
+                <h5>Total: Rs.<span id="totalPrice">{{ seat_categories.0.price }}</span></h5>
+            </div>
                 <button type="submit" class="btn btn-primary">Confirm Booking</button>
                 <a href="{% url 'movie_detail' showtime.movie.id %}" class="btn btn-secondary">Cancel</a>
             </form>
+
+            <script>
+                function updateTotal() {
+                    const seats = parseInt(document.getElementById('seats').value);
+                    const selectedOption = document.getElementById('seat_category').selectedOptions[0];
+                    const pricePerTicket = parseFloat(selectedOption.dataset.price);
+                    document.getElementById('totalPrice').textContent = (pricePerTicket * seats).toFixed(2);
+                }
+
+                function updatePrice() {
+                    updateTotal();
+                }
+            </script>
         {% else %}
             <div class="alert alert-danger">
                 {% if showtime.start_time <= timezone.now %}

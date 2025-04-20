@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Movie, Showtime, Booking
+from .models import Movie, Showtime, Booking, SeatCategory
 from django.db.models import Q
 
 def home(request):
@@ -49,11 +49,15 @@ def movie_detail(request, movie_id):
 
 def book_ticket(request, showtime_id):
     showtime = Showtime.objects.get(id=showtime_id)
+    seat_categories = SeatCategory.objects.filter(theater=showtime.theater)
+
     if request.method == 'POST':
         name = request.POST.get('name')
         email = request.POST.get('email')
         phone = request.POST.get('phone')
         seats = int(request.POST.get('seats', 1))
+        seat_category_id = request.POST.get('seat_category')
+        seat_category = SeatCategory.objects.get(id=seat_category_id)
 
         if seats <= showtime.available_seats:
             Booking.objects.create(
@@ -61,13 +65,14 @@ def book_ticket(request, showtime_id):
                 email=email,
                 phone=phone,
                 showtime=showtime,
+                seat_category=seat_category,
                 seats=seats
             )
             showtime.available_seats -= seats
             showtime.save()
             return redirect('booking_confirmation', booking_id=Booking.objects.latest('id').id)
 
-    return render(request, 'tickets/book_ticket.html', {'showtime': showtime})
+    return render(request, 'tickets/book_ticket.html', {'showtime': showtime,'seat_categories': seat_categories})
 
 def booking_confirmation(request, booking_id):
     booking = Booking.objects.get(id=booking_id)
