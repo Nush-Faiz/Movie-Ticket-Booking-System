@@ -1,6 +1,6 @@
 from django.db import models
 from django.utils import timezone
-from django.core.validators import RegexValidator
+from django.core.validators import RegexValidator, EmailValidator
 
 
 class Movie(models.Model):
@@ -88,7 +88,14 @@ class Showtime(models.Model):
 
 class Booking(models.Model):
     name = models.CharField(max_length=100, default='Guest User')
-    email = models.EmailField(default='guest@example.com')
+    email = models.EmailField(default='guest@example.com',
+                              validators = [
+                                  EmailValidator(
+                                      message='Please enter a valid email address',
+                                      code='invalid_email'
+                                  ),
+                              ]
+    )
     phone = models.CharField(max_length=15,
                              default='0000000000',
                              validators =[
