@@ -84,9 +84,9 @@ def book_ticket(request, showtime_id):
                 messages.error(request, 'Not enough available seats for this showtime.')
 
         except ValidationError as e:
-            if 'email' in e.message_dict or 'email' in str(e):
+            if hasattr(e, 'message') and 'email' in str(e.message):
                 messages.error(request, 'Please enter a valid email address')
-            elif 'phone' in e.message_dict:
+            elif hasattr(e, 'error_dict') and 'phone' in e.error_dict:
                 messages.error(request, 'Phone number must be exactly 10 digits')
             else:
                 messages.error(request, 'There was an error with your booking. Please check your information.')
