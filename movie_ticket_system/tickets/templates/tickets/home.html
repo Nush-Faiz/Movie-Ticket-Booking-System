@@ -1,6 +1,38 @@
 {% extends 'tickets/base.html' %}
 
 {% block content %}
+
+<div class="container mb-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <form method="get" class="search-form">
+          <input type="hidden" name="genre" value="{{ selected_genre }}">
+          <input type="hidden" name="format" value="{{ selected_format }}">
+          <input type="hidden" name="language" value="{{ selected_language }}">
+
+
+          <div class="input-group">
+              <i class="bi bi-search search-icon"></i>
+            <input
+                type="text"
+                name="search"
+                class="form-control form-control-lg search-input"
+                placeholder="Search movies..."
+                value="{{ search_query }}"
+                style="border-radius: 30px; padding: 15px 25px;"
+            >
+            <button class="btn btn-danger position-absolute end-0 top-50 translate-middle-y me-3"
+                  type="submit"
+                  style="background: none; border: none;">
+                <i class="bi bi-arrow-right-circle fs-4"></i>
+            </button>
+          </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+
 <form method="get" class="row align-items-end g-2 mb-4">
     <div class="row g-2">
         <div class="col-md-1">
@@ -46,7 +78,7 @@
 <div class="py-4">
     <h1 class="text-center mb-4">Now Showing</h1>
     <div class="row">
-        {% for movie in movies %}
+        {% for movie in now_showing %}
         <div class="col-md-4 mb-4">
             <div class="card movie-card shadow">
                 {% if movie.poster %}
@@ -65,4 +97,34 @@
         {% endfor %}
     </div>
 </div>
+
+<div class="py-4 mt-5 border-top">
+    <h1 class="text-center mb-4">Coming Soon</h1>
+    <div class="row">
+        {% for movie in upcoming %}
+        <div class="col-md-4 mb-4">
+            <div class="card movie-card shadow">
+                {% if movie.poster %}
+                <img src="{{ movie.poster.url }}" class="card-img-top movie-poster" alt="{{ movie.title }}" style="opacity: 0.8;">
+                {% endif %}
+                <div class="card-body">
+                    <h5 class="card-title">{{ movie.title }}</h5>
+                    <p class="card-text text-muted">
+                        Releases on {{ movie.release_date|date:"M d, Y" }}
+                    </p>
+                    <p class="card-text">{{ movie.description|truncatechars:100 }}</p>
+                    <button class="btn btn-outline-primary" disabled>
+                        Coming Soon
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% empty %}
+        <div class="col-12 text-center text-muted">
+            No upcoming movies scheduled
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
 {% endblock %}

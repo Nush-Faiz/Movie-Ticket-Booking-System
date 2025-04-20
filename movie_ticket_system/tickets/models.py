@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 
 
 class Movie(models.Model):
@@ -33,6 +34,13 @@ class Movie(models.Model):
     default='English'
     )
     poster = models.ImageField(upload_to='media/', blank=True)
+    is_released = models.BooleanField(default=False)
+    release_date = models.DateField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.release_date and self.release_date <= timezone.now().date():
+            self.is_released = True
+        super().save(*args, **kwargs)
 
     def formatted_duration(self):
         hours = self.duration // 60
@@ -60,6 +68,10 @@ class Showtime(models.Model):
     theater = models.ForeignKey(Theater, on_delete=models.CASCADE)
     start_time = models.DateTimeField()
     available_seats = models.IntegerField()
+
+    @property
+    def is_available(self):
+        return self.available_seats > 0 and self.start_time > timezone.now()
 
     def _str_(self):
         return f"{self.movie.title} at {self.theater.name}"
