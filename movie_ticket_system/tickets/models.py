@@ -78,10 +78,17 @@ class Showtime(models.Model):
     start_time = models.DateTimeField()
     available_seats = models.IntegerField()
 
+    @property
+    def has_passed(self):
+        return self.start_time <= timezone.now()
+
+    @property
+    def is_sold_out(self):
+        return self.available_seats <= 0
 
     @property
     def is_available(self):
-        return self.available_seats > 0 and self.start_time > timezone.now()
+        return not self.has_passed and not self.is_sold_out
 
     def _str_(self):
         return f"{self.movie.title} at {self.theater.name}"

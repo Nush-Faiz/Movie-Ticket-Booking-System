@@ -32,10 +32,10 @@
                     </ul>
                 </div>
             </div>
-            {% if showtime.start_time <= timezone.now %}
-                <span class="badge bg-secondary">Showtime Passed</span>
-            {% elif showtime.available_seats <= 0 %}
-                <span class="badge bg-danger">Sold Out</span>
+            {% if showtime.has_passed %}
+                <span class="badge showtime-passed">Showtime Passed</span>
+            {% elif showtime.is_sold_out %}
+                <span class="badge sold-out">Sold Out</span>
             {% else %}
                 <a href="{% url 'book_ticket' showtime.id %}" class="btn btn-success">Book Now</a>
             {% endif %}
