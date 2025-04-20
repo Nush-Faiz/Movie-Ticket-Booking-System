@@ -72,7 +72,7 @@ def book_ticket(request, showtime_id):
             showtime.save()
             return redirect('booking_confirmation', booking_id=Booking.objects.latest('id').id)
 
-    return render(request, 'tickets/book_ticket.html', {'showtime': showtime,'seat_categories'=seat_categories})
+    return render(request, 'tickets/book_ticket.html', {'showtime': showtime,'seat_categories': seat_categories})
 
 def booking_confirmation(request, booking_id):
     booking = Booking.objects.get(id=booking_id)

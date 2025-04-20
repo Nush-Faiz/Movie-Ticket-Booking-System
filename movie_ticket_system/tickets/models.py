@@ -69,7 +69,7 @@ class SeatCategory(models.Model):
     theater = models.ForeignKey(Theater, on_delete=models.CASCADE, related_name='seat_categories')
 
     def __str__(self):
-        return f"{self.name} ({self.theater.name}) - ${self.price}"
+        return f"{self.name} ({self.theater.name}) - Rs.{self.price}"
 
 class Showtime(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
@@ -90,7 +90,7 @@ class Booking(models.Model):
     email = models.EmailField(default='guest@example.com')
     phone = models.CharField(max_length=15, default='0000000000')
     showtime = models.ForeignKey(Showtime, on_delete=models.CASCADE)
-    seat_category = models.ForeignKey(SeatCategory, on_delete=models.CASCADE)
+    seat_category = models.ForeignKey(SeatCategory, on_delete=models.CASCADE, null=True, blank=True)
     seats = models.IntegerField(default=1)
     booked_at = models.DateTimeField(auto_now_add=True)
     total_price = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
