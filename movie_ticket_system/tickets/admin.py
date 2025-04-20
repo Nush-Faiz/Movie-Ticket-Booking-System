@@ -3,10 +3,19 @@ from .models import Movie, Theater, Showtime, Booking,SeatCategory
 
 @admin.register(Movie)
 class MovieAdmin(admin.ModelAdmin):
-    list_display = ('title', 'is_released', 'release_date', 'genre', 'rating')
-    list_filter = ('is_released', 'genre', 'rating')
-    search_fields = ('title', 'description', 'synopsis')
+    list_display = ('title', 'is_released', 'release_date', 'director', 'genre', 'rating')
+    list_filter = ('is_released', 'genre', 'rating', 'release_date')
+    search_fields = ('title', 'description','synopsis', 'director', 'cast')
     list_editable = ('is_released',)
+    fieldsets = (
+        (None, {
+            'fields': ('title', 'description', 'synopsis')
+        }),
+        ('Details', {
+            'fields': ('director', 'cast', 'duration', 'rating', 'genre',
+                       'format', 'language', 'poster', 'release_date', 'is_released')
+        }),
+    )
 
 @admin.register(Theater)
 class TheaterAdmin(admin.ModelAdmin):

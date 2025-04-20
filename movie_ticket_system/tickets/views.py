@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Movie, Showtime, Booking, SeatCategory
 from django.db.models import Q
 from django.core.exceptions import ValidationError
@@ -97,3 +97,7 @@ def book_ticket(request, showtime_id):
 def booking_confirmation(request, booking_id):
     booking = Booking.objects.get(id=booking_id)
     return render(request, 'tickets/booking_confirmation.html', {'booking': booking})
+
+def upcoming_movie_detail(request, movie_id):
+    movie = get_object_or_404(Movie, id=movie_id)
+    return render(request, 'tickets/upcoming_movie_detail.html', {'movie': movie})

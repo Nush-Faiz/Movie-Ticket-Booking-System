@@ -113,9 +113,9 @@
                         Releases on {{ movie.release_date|date:"M d, Y" }}
                     </p>
                     <p class="card-text">{{ movie.description|truncatechars:100 }}</p>
-                    <button class="btn btn-outline-primary" disabled>
-                        Coming Soon
-                    </button>
+                    <a href="{% url 'upcoming_detail' movie.id %}" class="btn btn-outline-primary">
+                        View Details
+                    </a>
                 </div>
             </div>
         </div>

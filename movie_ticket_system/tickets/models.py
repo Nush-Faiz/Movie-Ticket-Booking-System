@@ -9,6 +9,9 @@ class Movie(models.Model):
     duration = models.IntegerField()
     rating = models.CharField(max_length=5)
     synopsis = models.TextField(blank=True, null=True)
+    director = models.CharField(max_length=100, blank=True, null=True)
+    cast = models.TextField(blank=True, null=True,
+                            help_text="Separate actor names with commas")
     genre = models.CharField(max_length=50, choices=[
         ('Action', 'Action'),
         ('Adventure', 'Adventure'),
