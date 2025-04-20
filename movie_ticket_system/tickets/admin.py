@@ -12,13 +12,18 @@ class MovieAdmin(admin.ModelAdmin):
 class TheaterAdmin(admin.ModelAdmin):
     list_display = ('name', 'location', 'capacity')
 
+@admin.register(SeatCategory)
+class SeatCategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'theater', 'price')
+    list_filter = ('theater',)
+    search_fields = ('name', 'theater__name')
+
 @admin.register(Showtime)
 class ShowtimeAdmin(admin.ModelAdmin):
-    list_display = ('movie', 'theater', 'start_time', 'available_seats', 'price')
+    list_display = ('movie', 'theater', 'start_time', 'available_seats')
     list_filter = ('movie', 'theater')
-    list_editable = ('price',)
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-    list_display = ('name', 'showtime', 'seats', 'total_price', 'booked_at')
-    list_filter = ('showtime',)
+    list_display = ('name', 'showtime', 'seat_category', 'seats', 'total_price', 'booked_at')
+    list_filter = ('showtime', 'seat_category')
