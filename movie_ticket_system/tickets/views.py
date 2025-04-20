@@ -1,6 +1,9 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Movie, Showtime, Booking, SeatCategory
 from django.db.models import Q
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email
+from django.contrib import messages
 
 def home(request):
     search_query = request.GET.get('search', '')
@@ -59,8 +62,10 @@ def book_ticket(request, showtime_id):
         seat_category_id = request.POST.get('seat_category')
         seat_category = SeatCategory.objects.get(id=seat_category_id)
 
-        if seats <= showtime.available_seats:
-            Booking.objects.create(
+        try:
+            validate_email(email)
+
+            booking = Booking(
                 name=name,
                 email=email,
                 phone=phone,
@@ -68,12 +73,31 @@ def book_ticket(request, showtime_id):
                 seat_category=seat_category,
                 seats=seats
             )
-            showtime.available_seats -= seats
-            showtime.save()
-            return redirect('booking_confirmation', booking_id=Booking.objects.latest('id').id)
+            booking.full_clean()
+
+            if seats <= showtime.available_seats:
+                booking.save()
+                showtime.available_seats -= seats
+                showtime.save()
+                return redirect('booking_confirmation', booking_id=booking.id)
+            else:
+                messages.error(request, 'Not enough available seats for this showtime.')
+
+        except ValidationError as e:
+            if hasattr(e, 'message') and 'email' in str(e.message):
+                messages.error(request, 'Please enter a valid email address')
+            elif hasattr(e, 'error_dict') and 'phone' in e.error_dict:
+                messages.error(request, 'Phone number must be exactly 10 digits')
+            else:
+                messages.error(request, 'There was an error with your booking. Please check your information.')
+
 
     return render(request, 'tickets/book_ticket.html', {'showtime': showtime,'seat_categories': seat_categories})
 
 def booking_confirmation(request, booking_id):
     booking = Booking.objects.get(id=booking_id)
     return render(request, 'tickets/booking_confirmation.html', {'booking': booking})
+
+def upcoming_movie_detail(request, movie_id):
+    movie = get_object_or_404(Movie, id=movie_id)
+    return render(request, 'tickets/upcoming_movie_detail.html', {'movie': movie})

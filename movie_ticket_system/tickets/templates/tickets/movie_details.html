@@ -11,6 +11,13 @@
         <h1>{{ movie.title }}</h1>
         <p class="text-muted">{{ movie.rating }} | {{ movie.formatted_duration }}</p>
         <p>{{ movie.description }}</p>
+
+        <div class="mt-4">
+            <h4>Synopsis</h4>
+            <div class="synopsis-box p-3 bg-light rounded">
+                {{ movie.synopsis|linebreaks }}
+            </div>
+        </div>
     </div>
 </div>
 
@@ -32,14 +39,12 @@
                     </ul>
                 </div>
             </div>
-             {% if showtime.is_available %}
+            {% if showtime.has_passed %}
+                <span class="badge showtime-passed">Showtime Passed</span>
+            {% elif showtime.is_sold_out %}
+                <span class="badge sold-out">Sold Out</span>
+            {% else %}
                 <a href="{% url 'book_ticket' showtime.id %}" class="btn btn-success">Book Now</a>
-             {% else %}
-                {% if showtime.start_time <= timezone.now %}
-                    <span class="badge bg-secondary">Showtime Passed</span>
-                {% else %}
-                    <span class="badge bg-danger">Sold Out</span>
-                {% endif %}
             {% endif %}
         </div>
     </div>
