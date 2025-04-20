@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Movie, Showtime, Booking
+from .models import Movie, Showtime, Booking, SeatCategory
 from django.db.models import Q
 
 def home(request):
