@@ -5,7 +5,7 @@ from .models import Movie, Theater, Showtime, Booking,SeatCategory
 class MovieAdmin(admin.ModelAdmin):
     list_display = ('title', 'is_released', 'release_date', 'genre', 'rating')
     list_filter = ('is_released', 'genre', 'rating')
-    search_fields = ('title', 'description')
+    search_fields = ('title', 'description', 'synopsis')
     list_editable = ('is_released',)
 
 @admin.register(Theater)

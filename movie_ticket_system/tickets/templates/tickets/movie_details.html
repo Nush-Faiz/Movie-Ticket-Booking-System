@@ -11,6 +11,13 @@
         <h1>{{ movie.title }}</h1>
         <p class="text-muted">{{ movie.rating }} | {{ movie.formatted_duration }}</p>
         <p>{{ movie.description }}</p>
+
+        <div class="mt-4">
+            <h4>Synopsis</h4>
+            <div class="synopsis-box p-3 bg-light rounded">
+                {{ movie.synopsis|linebreaks }}
+            </div>
+        </div>
     </div>
 </div>
 

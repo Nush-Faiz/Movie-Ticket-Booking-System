@@ -8,6 +8,7 @@ class Movie(models.Model):
     description = models.TextField()
     duration = models.IntegerField()
     rating = models.CharField(max_length=5)
+    synopsis = models.TextField(blank=True, null=True)
     genre = models.CharField(max_length=50, choices=[
         ('Action', 'Action'),
         ('Adventure', 'Adventure'),
