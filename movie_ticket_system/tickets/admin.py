@@ -25,5 +25,9 @@ class ShowtimeAdmin(admin.ModelAdmin):
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-    list_display = ('name', 'showtime', 'seat_category', 'seats', 'total_price', 'booked_at')
+    list_display = ('name', 'showtime', 'get_seat_category', 'seats', 'total_price', 'booked_at')
     list_filter = ('showtime', 'seat_category')
+
+    def get_seat_category(self, obj):
+        return obj.seat_category.name if obj.seat_category else "No Category"
+    get_seat_category.short_description = 'Seat Category'

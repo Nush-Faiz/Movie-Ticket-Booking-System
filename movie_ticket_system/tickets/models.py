@@ -120,10 +120,12 @@ class Booking(models.Model):
     total_price = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
 
     def save(self, *args, **kwargs):
-        self.total_price = self.seat_category.price * self.seats
+        if self.seat_category:
+            self.total_price = self.seat_category.price * self.seats
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return f"{self.name} booked {self.seats} {self.seat_category.name} seats for {self.showtime}"
+        category_name = self.seat_category.name if self.seat_category else "No Category"
+        return f"{self.name} booked {self.seats} {category_name} seats for {self.showtime}"
 
 
