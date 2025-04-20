@@ -7,6 +7,7 @@
     <div class="card-body">
         <p><strong>Theater:</strong> {{ showtime.theater.name }}</p>
         <p><strong>Showtime:</strong> {{ showtime.start_time }}</p>
+        <p><strong>Price per ticket:</strong> ${{ showtime.price }}</p>
         {% if showtime.is_available %}
             <p><strong>Available Seats:</strong> {{ showtime.available_seats }}</p>
         
@@ -25,12 +26,22 @@
                     <input type="tel" class="form-control" id="phone" name="phone" required>
                 </div>
                 <div class="mb-3">
+                    <h5>Total: $<span id="totalPrice">{{ showtime.price }}</span></h5>
+                </div>
+                <div class="mb-3">
                     <label for="seats" class="form-label">Number of Seats</label>
-                    <input type="number" class="form-control" id="seats" name="seats" min="1" max="{{ showtime.available_seats }}" value="1">
+                    <input type="number" class="form-control" id="seats" name="seats" min="1" max="{{ showtime.available_seats }}" value="1" onchange="updateTotal(this.value)">
                 </div>
                 <button type="submit" class="btn btn-primary">Confirm Booking</button>
                 <a href="{% url 'movie_detail' showtime.movie.id %}" class="btn btn-secondary">Cancel</a>
             </form>
+
+            <script>
+                function updateTotal(seats) {
+                    const pricePerTicket = {{ showtime.price }};
+                    document.getElementById('totalPrice').textContent = (pricePerTicket * seats).toFixed(2);
+                }
+            </script>
         {% else %}
             <div class="alert alert-danger">
                 {% if showtime.start_time <= timezone.now %}

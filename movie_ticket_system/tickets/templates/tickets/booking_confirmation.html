@@ -11,6 +11,8 @@
             <p><strong>Theater:</strong> {{ booking.showtime.theater.name }}</p>
             <p><strong>Time:</strong> {{ booking.showtime.start_time|date:"D, M j, Y" }} at {{ booking.showtime.start_time|time:"g:i A" }}</p>
             <p><strong>Seats:</strong> {{ booking.seats }}</p>
+            <p><strong>Price per ticket:</strong> ${{ booking.showtime.price }}</p>
+            <p><strong>Total Price:</strong> ${{ booking.total_price }}</p>
             <hr>
             <p><strong>Name:</strong> {{ booking.full_name }}</p>
             <p><strong>Email:</strong> {{ booking.email }}</p>

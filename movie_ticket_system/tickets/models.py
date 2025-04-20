@@ -68,6 +68,7 @@ class Showtime(models.Model):
     theater = models.ForeignKey(Theater, on_delete=models.CASCADE)
     start_time = models.DateTimeField()
     available_seats = models.IntegerField()
+    price = models.DecimalField(max_digits=6, decimal_places=2, default=10.00)
 
     @property
     def is_available(self):
@@ -83,6 +84,11 @@ class Booking(models.Model):
     showtime = models.ForeignKey(Showtime, on_delete=models.CASCADE)
     seats = models.IntegerField(default=1)
     booked_at = models.DateTimeField(auto_now_add=True)
+    total_price = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+
+    def save(self, *args, **kwargs):
+        self.total_price = self.showtime.price * self.seats
+        super().save(*args, **kwargs)
 
     def _str_(self):
         return f"{self.name} booked {self.showtime.movie.title}"

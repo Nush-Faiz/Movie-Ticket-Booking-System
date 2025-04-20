@@ -14,10 +14,11 @@ class TheaterAdmin(admin.ModelAdmin):
 
 @admin.register(Showtime)
 class ShowtimeAdmin(admin.ModelAdmin):
-    list_display = ('movie', 'theater', 'start_time', 'available_seats')
+    list_display = ('movie', 'theater', 'start_time', 'available_seats', 'price')
     list_filter = ('movie', 'theater')
+    list_editable = ('price',)
 
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
-    list_display = ('name', 'showtime', 'seats', 'booked_at')
+    list_display = ('name', 'showtime', 'seats', 'total_price', 'booked_at')
     list_filter = ('showtime',)
