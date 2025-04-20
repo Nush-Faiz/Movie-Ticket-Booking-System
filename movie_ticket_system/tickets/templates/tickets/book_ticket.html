@@ -22,7 +22,8 @@
                 </div>
                 <div class="mb-3">
                     <label for="phone" class="form-label">Your Phone Number</label>
-                    <input type="tel" class="form-control" id="phone" name="phone" required>
+                    <input type="tel" class="form-control" id="phone" name="phone" required pattern="[0-9]{10}" title="Please enter exactly 10 digits">
+                    <small class="text-muted">Must be exactly 10 digits</small>
                 </div>
                 <div class="mb-3">
                     <label for="seat_category" class="form-label">Seat Category</label>
