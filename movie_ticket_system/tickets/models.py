@@ -72,6 +72,7 @@ class SeatCategory(models.Model):
     name = models.CharField(max_length=50)
     price = models.DecimalField(max_digits=6, decimal_places=2)
     theater = models.ForeignKey(Theater, on_delete=models.CASCADE, related_name='seat_categories')
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"{self.name} ({self.theater.name}) - Rs.{self.price}"
