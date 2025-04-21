@@ -66,6 +66,51 @@
             object-fit: cover;
         }
 
+        .featured-movie-card {
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .featured-movie-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+        }
+
+        .movie-poster-container {
+            position: relative;
+            overflow: hidden;
+            height: 350px;
+        }
+
+        .movie-poster-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .featured-movie-card:hover .movie-poster-container img {
+            transform: scale(1.05);
+        }
+
+        .movie-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            padding: 20px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .featured-movie-card:hover .movie-overlay {
+            opacity: 1;
+        }
+
         .coming-soon-badge {
             position: absolute;
             top: 10px;
@@ -132,6 +177,36 @@
             text-align: center;
             padding-top: 20px;
             border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .hero-banner {
+            position: relative;
+            background-position: center;
+        }
+
+        .hero-content {
+            max-width: 600px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            animation: fadeIn 1.5s ease-in-out;
+        }
+
+        .search-card {
+            background: white;
+            border: 1px solid #eee;
+            margin-top: -50px;
+            position: relative;
+            z-index: 10;
+        }
+
+        .category-tags {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
     </style>
