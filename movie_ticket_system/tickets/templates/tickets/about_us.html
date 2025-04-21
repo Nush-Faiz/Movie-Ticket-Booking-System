@@ -1,0 +1,47 @@
+{% extends 'tickets/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h2 class="mb-0">About BookFlix</h2>
+                </div>
+                <div class="card-body">
+                    <div class="text-center mb-4">
+                        <img src="{% static 'tickets/images/logo.png' %}" alt="BookFlix Logo" class="img-fluid" style="max-height: 150px;">
+                    </div>
+                    
+                    <h4 class="text-primary">Our Story</h4>
+                    <p class="mb-4">
+                        Founded in 2025, BookFlix is Sri Lanka's premier online movie ticket booking platform. 
+                        We revolutionized the cinema experience by making ticket booking simple, fast, and secure.
+                    </p>
+                    
+                    <h4 class="text-primary">Our Mission</h4>
+                    <p class="mb-4">
+                        To bring joy to movie lovers by providing seamless access to the best cinematic experiences 
+                        while supporting local theaters and filmmakers.
+                    </p>
+                    
+                    <h4 class="text-primary">Why Choose Us?</h4>
+                    <ul class="list-group mb-4">
+                        <li class="list-group-item">Instant ticket confirmation</li>
+                        <li class="list-group-item">Best seat selection</li>
+                        <li class="list-group-item">Secure payment options</li>
+                        <li class="list-group-item">24/7 customer support</li>
+                    </ul>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% url 'home' %}" class="btn btn-primary">
+                            <i class="bi bi-arrow-left"></i> Back to Movies
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

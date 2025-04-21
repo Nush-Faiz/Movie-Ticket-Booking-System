@@ -1,7 +1,7 @@
 {% extends 'tickets/base.html' %}
 
 {% block content %}
-
+<main>
 <div class="container mb-5">
   <div class="row justify-content-center">
     <div class="col-md-8">
@@ -127,4 +127,26 @@
     </div>
 </div>
 
+ <footer class="footer mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <div class="footer-links text-center">
+                        <div class="footer-group">
+                            <h5>GENERAL</h5>
+                            <div class="d-flex justify-content-center gap-3 flex-wrap">
+                                <a href="{% url 'about_us' %}" class="text-white">About Us</a>
+                                <a href="{% url 'faqs' %}" class="text-white">FAQ's</a>
+                                <a href="{% url 'feedback' %}" class="text-white">Feedback</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="footer-bottom text-center pt-3 mt-3 border-top border-secondary">
+                        <p class="mb-0">&copy; 2025 BookFlix. All rights reserved.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+ </footer>
+</main>
 {% endblock %}

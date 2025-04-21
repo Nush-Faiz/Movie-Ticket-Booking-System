@@ -4,6 +4,8 @@ from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
 from django.contrib import messages
+from django.core.mail import send_mail
+from django.conf import settings
 
 def home(request):
     search_query = request.GET.get('search', '')
@@ -101,3 +103,52 @@ def booking_confirmation(request, booking_id):
 def upcoming_movie_detail(request, movie_id):
     movie = get_object_or_404(Movie, id=movie_id)
     return render(request, 'tickets/upcoming_movie_detail.html', {'movie': movie})
+
+def about_us(request):
+    return render(request, 'tickets/about_us.html')
+
+def faqs(request):
+    return render(request, 'tickets/faqs.html')
+
+def feedback(request):
+    if request.method == 'POST':
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        subject = request.POST.get('subject')
+        message = request.POST.get('message')
+
+        full_message = f"""
+                You have received a new feedback message:
+
+                From: {name} <{email}>
+                Subject: {subject}
+
+                Message:
+                {message}
+                """
+        try:
+
+            send_mail(
+                subject=f'Feedback: {subject}',
+                message=full_message,
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[settings.DEFAULT_FROM_EMAIL],
+                fail_silently=False,
+            )
+
+
+            send_mail(
+                subject='Thank you for your feedback',
+                message=f'Hello {name},\n\nWe have received your feedback and will get back to you soon.\n\nYour message:\n{message}',
+                from_email=settings.DEFAULT_FROM_EMAIL,
+                recipient_list=[email],
+                fail_silently=False,
+            )
+
+            messages.success(request, 'Thank you for your feedback! We will get back to you soon.')
+            return redirect('feedback')
+
+        except Exception as e:
+            messages.error(request, f'There was an error sending your feedback. Please try again later. Error: {str(e)}')
+
+    return render(request, 'tickets/feedback.html')
