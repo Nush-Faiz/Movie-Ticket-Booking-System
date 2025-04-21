@@ -1,152 +1,256 @@
 {% extends 'tickets/base.html' %}
-
+{% load static %}
 {% block content %}
 <main>
-<div class="container mb-5">
-  <div class="row justify-content-center">
-    <div class="col-md-8">
-      <form method="get" class="search-form">
-          <input type="hidden" name="genre" value="{{ selected_genre }}">
-          <input type="hidden" name="format" value="{{ selected_format }}">
-          <input type="hidden" name="language" value="{{ selected_language }}">
-
-
-          <div class="input-group">
-              <i class="bi bi-search search-icon"></i>
-            <input
-                type="text"
-                name="search"
-                class="form-control form-control-lg search-input"
-                placeholder="Search movies..."
-                value="{{ search_query }}"
-                style="border-radius: 30px; padding: 15px 25px;"
-            >
-            <button class="btn btn-danger position-absolute end-0 top-50 translate-middle-y me-3"
-                  type="submit"
-                  style="background: none; border: none;">
-                <i class="bi bi-arrow-right-circle fs-4"></i>
-            </button>
-          </div>
-      </form>
-    </div>
-  </div>
-</div>
-
-
-<form method="get" class="row align-items-end g-2 mb-4">
-    <div class="row g-2">
-        <div class="col-md-1">
-            <select name="genre" id="genre" class="form-select" onchange="this.form.submit()">
-                <option disabled {% if not selected_genre or selected_genre == "All" %}selected{% endif %}>Genre</option>
-                <option value="All"{% if selected_genre == "All" %}selected{% endif %}>All</option>
-                <option value="Action" {% if selected_genre == "Action" %}selected{% endif %}>Action</option>
-                <option value="Adventure" {% if selected_genre == "Adventure" %}selected{% endif %}>Adventure</option>
-                <option value="Animation"{% if selected_genre == "Animation" %}selected{% endif %}>Animation</option>
-                <option value="Biography"{% if selected_genre == "Biography" %}selected{% endif %}>Biography</option>
-                <option value="Drama"{% if selected_genre == "Drama" %}selected{% endif %}>Drama</option>
-                <option value="Horror"{% if selected_genre == "Horror" %}selected{% endif %}>Horror</option>
-                <option value="Thriller"{% if selected_genre == "Thriller" %}selected{% endif %}>Thriller</option>
-            </select>
-        </div>
-        <div class="col-md-1">
-            <select name="format" id="format" class="form-select" onchange="this.form.submit()">
-                <option disabled {% if not selected_format or selected_format == "All" %}selected{% endif %}>Format</option>
-                <option {% if selected_format == "All" %}selected{% endif %}>All</option>
-                <option {% if selected_format == "2D" %}selected{% endif %}>2D</option>
-                <option {% if selected_format == "3D" %}selected{% endif %}>3D</option>
-            </select>
-        </div>
-        <div class="col-md-1">
-            <select name="language" id="language" class="form-select" onchange="this.form.submit()">
-                <option disabled {% if not selected_language or selected_language == "All" %}selected{% endif %}>Language</option>
-                <option {% if selected_language == "All" %}selected{% endif %}>All</option>
-                <option {% if selected_language == "Chinese" %}selected{% endif %}>Chinese</option>
-                <option {% if selected_language == "English" %}selected{% endif %}>English</option>
-                <option {% if selected_language == "Hindi" %}selected{% endif %}>Hindi</option>
-                <option {% if selected_language == "Sinhala" %}selected{% endif %}>Sinhala</option>
-                <option {% if selected_language == "Tamil" %}selected{% endif %}>Tamil</option>
-            </select>
-        </div>
-    </div>
-    <div class="col-md-3 d-flex gap-2">
-        {% if selected_genre != "All" or selected_format != "All" or selected_language != "All" %}
-             <a href="{% url 'home' %}" class="btn btn-secondary">Reset</a>
-        {% endif %}
-    </div>
-</form>
-
-<div class="py-4">
-    <h1 class="text-center mb-4">Now Showing</h1>
-    <div class="row">
-        {% for movie in now_showing %}
-        <div class="col-md-4 mb-4">
-            <div class="card movie-card shadow">
-                {% if movie.poster %}
-                <img src="{{ movie.poster.url }}" class="card-img-top movie-poster" alt="{{ movie.title }}">
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ movie.title }}</h5>
-                    <p class="card-text text-muted">
-                        {{ movie.formatted_duration }}  | Rating: {{ movie.rating }} | {{ movie.language }}
-                    </p>
-                    <p class="card-text">{{ movie.description|truncatechars:100 }}</p>
-                    <a href="{% url 'movie_detail' movie.id %}" class="btn btn-primary">Book Tickets</a>
-                </div>
+    <div class="hero-banner mb-5" style="background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('{% static 'tickets/images/hero-banner.png' %}'); background-size: cover; background-position: center; height: 500px;">
+        <div class="container h-100 d-flex align-items-center">
+            <div class="hero-content text-white text-center w-100">
+                <h1 class="display-3 fw-bold mb-4">Welcome to BookFlix</h1>
+                <p class="fs-3 mb-4">Your Gateway to Cinematic Magic</p>
+                <p class="lead mb-5">🎬 Book Fast, Watch Happy! 🍿</p>
+                <a href="#now-showing" class="btn btn-danger btn-lg px-4 py-2">
+                    <i class="bi bi-film"></i> Explore Movies
+                </a>
             </div>
         </div>
-        {% endfor %}
     </div>
-</div>
 
-<div class="py-4 mt-5 border-top">
-    <h1 class="text-center mb-4">Coming Soon</h1>
-    <div class="row">
-        {% for movie in upcoming %}
-        <div class="col-md-4 mb-4">
-            <div class="card movie-card shadow">
-                {% if movie.poster %}
-                <img src="{{ movie.poster.url }}" class="card-img-top movie-poster" alt="{{ movie.title }}" style="opacity: 0.8;">
-                {% endif %}
-                <div class="card-body">
-                    <h5 class="card-title">{{ movie.title }}</h5>
-                    <p class="card-text text-muted">
-                        Releases on {{ movie.release_date|date:"M d, Y" }}
-                    </p>
-                    <p class="card-text">{{ movie.description|truncatechars:100 }}</p>
-                    <a href="{% url 'upcoming_detail' movie.id %}" class="btn btn-outline-primary">
-                        View Details
+    <div class="container mb-5">
+        <div class="search-card p-4 rounded-3 shadow-lg" style="background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+            <h3 class="text-center mb-4 text-dark">Find Your Perfect Movie Experience</h3>
+
+            <form method="get" class="search-form mb-4">
+                <div class="input-group">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" name="search" class="form-control form-control-lg search-input"
+                           placeholder="Search by movie title..." value="{{ search_query }}">
+                    <button class="btn btn-danger" type="submit">
+                        <i class="bi bi-arrow-right"></i>
+                    </button>
+                </div>
+            </form>
+
+            <form method="get" class="row g-3 align-items-center justify-content-center">
+                <div class="col-md-3">
+                    <select name="genre" id="genre" class="form-select form-select-lg" onchange="this.form.submit()">
+                        <option disabled {% if not selected_genre or selected_genre == "All" %}selected{% endif %}>Genre</option>
+                        <option value="All"{% if selected_genre == "All" %}selected{% endif %}>All Genres</option>
+                        <option value="Action" {% if selected_genre == "Action" %}selected{% endif %}>Action</option>
+                        <option value="Adventure" {% if selected_genre == "Adventure" %}selected{% endif %}>Adventure</option>
+                        <option value="Animation"{% if selected_genre == "Animation" %}selected{% endif %}>Animation</option>
+                        <option value="Biography"{% if selected_genre == "Biography" %}selected{% endif %}>Biography</option>
+                        <option value="Drama"{% if selected_genre == "Drama" %}selected{% endif %}>Drama</option>
+                        <option value="Horror"{% if selected_genre == "Horror" %}selected{% endif %}>Horror</option>
+                        <option value="Thriller"{% if selected_genre == "Thriller" %}selected{% endif %}>Thriller</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <select name="format" id="format" class="form-select form-select-lg" onchange="this.form.submit()">
+                        <option disabled {% if not selected_format or selected_format == "All" %}selected{% endif %}>Format</option>
+                        <option value="All"{% if selected_format == "All" %}selected{% endif %}>All Formats</option>
+                        <option value="2D"{% if selected_format == "2D" %}selected{% endif %}>2D</option>
+                        <option value="3D"{% if selected_format == "3D" %}selected{% endif %}>3D</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <select name="language" id="language" class="form-select form-select-lg" onchange="this.form.submit()">
+                        <option disabled {% if not selected_language or selected_language == "All" %}selected{% endif %}>Language</option>
+                        <option value="All"{% if selected_language == "All" %}selected{% endif %}>All Languages</option>
+                        <option value="Chinese"{% if selected_language == "Chinese" %}selected{% endif %}>Chinese</option>
+                        <option value="English"{% if selected_language == "English" %}selected{% endif %}>English</option>
+                        <option value="Hindi"{% if selected_language == "Hindi" %}selected{% endif %}>Hindi</option>
+                        <option value="Sinhala"{% if selected_language == "Sinhala" %}selected{% endif %}>Sinhala</option>
+                        <option value="Tamil"{% if selected_language == "Tamil" %}selected{% endif %}>Tamil</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3 text-center">
+                    {% if selected_genre != "All" or selected_format != "All" or selected_language != "All" %}
+                    <a href="{% url 'home' %}" class="btn btn-outline-secondary btn-lg w-100">
+                        <i class="bi bi-arrow-counterclockwise"></i> Reset Filters
                     </a>
+                    {% endif %}
                 </div>
-            </div>
+            </form>
         </div>
-        {% empty %}
-        <div class="col-12 text-center text-muted">
-            No upcoming movies scheduled
-        </div>
-        {% endfor %}
     </div>
-</div>
-</main>
 
- <div class="footer-container">
-    <footer class="footer">
-        <div class="container">
-            <div class="row">
-                <div class="col-12">
-                    <div class="footer-links text-center">
-                        <div class="footer-group">
-                            <h5>GENERAL</h5>
-                            <div class="d-flex justify-content-center gap-3 flex-wrap">
-                                <a href="{% url 'about_us' %}" class="text-white">About Us</a>
-                                <a href="{% url 'faqs' %}" class="text-white">FAQ's</a>
-                                <a href="{% url 'feedback' %}" class="text-white">Feedback</a>
-                            </div>
+    {% if featured_movies %}
+    <div class="container mb-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-danger">Featured This Week</h2>
+            <div class="text-muted">Book Fast, Watch Happy!</div>
+        </div>
+
+        <div class="row g-4">
+            {% for movie in featured_movies %}
+            <div class="col-md-4">
+                <div class="featured-movie-card h-100">
+                    <div class="movie-poster-container position-relative">
+                        {% if movie.poster %}
+                        <img src="{{ movie.poster.url }}" class="img-fluid rounded-top" alt="{{ movie.title }}">
+                        {% else %}
+                        <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 350px;">
+                            <i class="bi bi-film text-white" style="font-size: 3rem;"></i>
+                        </div>
+                        {% endif %}
+                        <div class="movie-overlay d-flex align-items-center justify-content-center">
+                            <a href="{% url 'movie_detail' movie.id %}" class="btn btn-danger btn-lg">
+                                <i class="bi bi-ticket-perforated"></i> Book Now
+                            </a>
+                        </div>
+                        <div class="position-absolute top-0 end-0 p-2 bg-danger text-white rounded-bottom-start">
+                            Featured
                         </div>
                     </div>
-                    <div class="footer-bottom text-center pt-3 mt-3 border-top border-secondary">
-                        <p class="mb-0">&copy; 2025 BookFlix. All rights reserved.</p>
+                    <div class="movie-info p-3 border rounded-bottom">
+                        <h5 class="fw-bold">{{ movie.title }}</h5>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="badge bg-primary">{{ movie.rating }}</span>
+                            <small class="text-muted">{{ movie.formatted_duration }}</small>
+                        </div>
+                        <div class="mt-2">
+                            <span class="badge bg-info text-dark">{{ movie.language }}</span>
+                            <span class="badge bg-warning text-dark ms-1">{{ movie.format }}</span>
+                        </div>
                     </div>
                 </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="container py-4" id="now-showing">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-primary">Now Showing</h2>
+            <div class="text-muted">Book your tickets today!</div>
+        </div>
+
+        {% if now_showing %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for movie in now_showing %}
+            <div class="col">
+                <div class="card movie-card h-100 shadow-sm">
+                    {% if movie.poster %}
+                    <img src="{{ movie.poster.url }}" class="card-img-top movie-poster" alt="{{ movie.title }}">
+                    {% else %}
+                    <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 400px;">
+                        <i class="bi bi-film text-white" style="font-size: 3rem;"></i>
+                    </div>
+                    {% endif %}
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">{{ movie.title }}</h5>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge bg-primary">{{ movie.rating }}</span>
+                            <small class="text-muted">{{ movie.formatted_duration }}</small>
+                        </div>
+                        <div class="mb-3">
+                            <span class="badge bg-info text-dark">{{ movie.language }}</span>
+                            <span class="badge bg-warning text-dark ms-1">{{ movie.format }}</span>
+                        </div>
+                        <p class="card-text text-muted">{{ movie.description|truncatechars:120 }}</p>
+                    </div>
+                    <div class="card-footer bg-white border-top-0">
+                        <a href="{% url 'movie_detail' movie.id %}" class="btn btn-primary w-100">
+                            <i class="bi bi-ticket-perforated"></i> Book Tickets
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info text-center">
+            <h4 class="alert-heading">No Movies Found</h4>
+            <p>There are currently no movies matching your criteria.</p>
+            <a href="{% url 'home' %}" class="btn btn-outline-primary">View All Movies</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="container py-4 mt-5 border-top">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h2 class="fw-bold text-secondary">Coming Soon</h2>
+            <div class="text-muted">Get ready for these exciting releases!</div>
+        </div>
+
+        {% if upcoming %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for movie in upcoming %}
+            <div class="col">
+                <div class="card movie-card h-100 shadow-sm">
+                    {% if movie.poster %}
+                    <img src="{{ movie.poster.url }}" class="card-img-top movie-poster" alt="{{ movie.title }}" style="opacity: 0.7;">
+                    {% else %}
+                    <div class="bg-secondary d-flex align-items-center justify-content-center" style="height: 400px;">
+                        <i class="bi bi-film text-white" style="font-size: 3rem;"></i>
+                    </div>
+                    {% endif %}
+                    <div class="position-absolute top-0 start-0 p-2 bg-dark text-white rounded-end">
+                        Coming Soon
+                    </div>
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold">{{ movie.title }}</h5>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="badge bg-primary">{{ movie.rating }}</span>
+                            <small class="text-muted">{{ movie.formatted_duration }}</small>
+                        </div>
+                        <div class="mb-3">
+                            <span class="badge bg-info text-dark">{{ movie.language }}</span>
+                            <span class="badge bg-warning text-dark ms-1">{{ movie.format }}</span>
+                        </div>
+                        <p class="card-text text-muted">Releases on {{ movie.release_date|date:"F j, Y" }}</p>
+                        <p class="card-text">{{ movie.description|truncatechars:120 }}</p>
+                    </div>
+                    <div class="card-footer bg-white border-top-0">
+                        <a href="{% url 'upcoming_detail' movie.id %}" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-info-circle"></i> View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div class="alert alert-info text-center">
+            <h4 class="alert-heading">No Upcoming Movies</h4>
+            <p>Check back later for new releases!</p>
+        </div>
+        {% endif %}
+    </div>
+</main>
+
+<div class="footer-container bg-dark">
+    <footer class="footer py-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 class="text-white mb-3">BookFlix</h5>
+                    <p class="text-white-50">Sri Lanka's premier online movie ticket booking platform. Book Fast, Watch Happy!</p>
+                </div>
+                <div class="col-md-4 mb-4 mb-md-0">
+                    <h5 class="text-white mb-3">Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li class="mb-2"><a href="{% url 'home' %}" class="text-white-50 text-decoration-none">Movies</a></li>
+                        <li class="mb-2"><a href="{% url 'about_us' %}" class="text-white-50 text-decoration-none">About Us</a></li>
+                        <li class="mb-2"><a href="{% url 'faqs' %}" class="text-white-50 text-decoration-none">FAQs</a></li>
+                        <li><a href="{% url 'feedback' %}" class="text-white-50 text-decoration-none">Feedback</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5 class="text-white mb-3">Connect With Us</h5>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-white fs-4"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="text-white fs-4"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="text-white fs-4"><i class="bi bi-instagram"></i></a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom text-center pt-4 mt-4 border-top border-secondary">
+                <p class="mb-0 text-white-50">&copy; 2025 BookFlix. All rights reserved.</p>
             </div>
         </div>
     </footer>
