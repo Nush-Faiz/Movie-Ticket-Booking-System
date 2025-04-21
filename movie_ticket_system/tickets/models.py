@@ -27,7 +27,7 @@ class Movie(models.Model):
         ('2D', '2D'),
         ('3D', '3D'),
     ],
-    default = '2D'
+    default='2D'
     )
     language = models.CharField(max_length=20, choices=[
         ('Chinese', 'Chinese'),
@@ -37,10 +37,11 @@ class Movie(models.Model):
         ('Tamil', 'Tamil'),
     ],
     default='English'
-    )
+     )
     poster = models.ImageField(upload_to='media/', blank=True)
     is_released = models.BooleanField(default=False)
     release_date = models.DateField(null=True, blank=True)
+    is_featured = models.BooleanField(default=False)
 
     def save(self, *args, **kwargs):
         if self.release_date and self.release_date <= timezone.now().date():
