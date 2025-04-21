@@ -13,9 +13,9 @@ def home(request):
     format = request.GET.get('format')
     language = request.GET.get('language')
 
+    featured_movies = Movie.objects.filter(is_featured=True)[:3]
     now_showing = Movie.objects.filter(is_released=True)
     upcoming = Movie.objects.filter(is_released=False).order_by('release_date')
-
 
     if search_query:
         now_showing = now_showing.filter(title__icontains=search_query)
@@ -38,12 +38,13 @@ def home(request):
         'now_showing': now_showing,
         'upcoming': upcoming,
         'search_query': search_query,
-        'selected_genre': genre or "All",
-        'selected_format': format or "All",
-        'selected_language': language or "All",
+        'selected_genre': genre or "ALL",
+        'selected_format': format or "ALL",
+        'selected_language': language or "ALL",
+        'featured_movies': featured_movies,
     }
 
-    return render(request, 'tickets/home.html', {'now_showing': now_showing, 'upcoming': upcoming })
+    return render(request, 'tickets/home.html', {'now_showing': now_showing, 'upcoming': upcoming,'featured_movies': featured_movies })
 
 
 def movie_detail(request, movie_id):
