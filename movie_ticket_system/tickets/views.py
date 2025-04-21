@@ -52,7 +52,7 @@ def movie_detail(request, movie_id):
 
 def book_ticket(request, showtime_id):
     showtime = Showtime.objects.get(id=showtime_id)
-    seat_categories = SeatCategory.objects.filter(theater=showtime.theater)
+    seat_categories = SeatCategory.objects.filter(theater=showtime.theater,movie=showtime.movie)
 
     if request.method == 'POST':
         name = request.POST.get('name')

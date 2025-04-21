@@ -23,8 +23,8 @@ class TheaterAdmin(admin.ModelAdmin):
 
 @admin.register(SeatCategory)
 class SeatCategoryAdmin(admin.ModelAdmin):
-    list_display = ('name', 'theater', 'price')
-    list_filter = ('theater',)
+    list_display = ('name', 'theater', 'price','movie')
+    list_filter = ('theater','movie')
     search_fields = ('name', 'theater__name')
 
 @admin.register(Showtime)

@@ -34,7 +34,15 @@
                     <small class="fw-bold">Seat Categories:</small>
                     <ul class="list-unstyled">
                         {% for category in showtime.theater.seat_categories.all %}
-                        <li>{{ category.name }} - Rs.{{ category.price }}</li>
+                           {% if category.movie == showtime.movie %}
+                           <li>{{ category.name }} - Rs.{{ category.price }}</li>
+                           {% endif %}
+                        {% endfor %}
+
+                        {% for category in showtime.theater.seat_categories.all %}
+                            {% if not category.movie %}
+                            <li>{{ category.name }} - Rs.{{ category.price }}</li>
+                            {% endif %}
                         {% endfor %}
                     </ul>
                 </div>
