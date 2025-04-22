@@ -6,6 +6,8 @@ from django.core.validators import validate_email
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.conf import settings
+from django.utils import timezone
+from datetime import timedelta
 
 def home(request):
     search_query = request.GET.get('search', '')
@@ -48,9 +50,51 @@ def home(request):
 
 
 def movie_detail(request, movie_id):
-    movie = Movie.objects.get(id=movie_id)
-    showtimes = Showtime.objects.filter(movie=movie)
-    return render(request, 'tickets/movie_details.html', {'movie': movie, 'showtimes': showtimes})
+    movie = get_object_or_404(Movie, id=movie_id)
+    today = timezone.now().date()
+
+    date_range = [today + timedelta(days=i) for i in range(7)]
+
+    selected_date_str = request.GET.get('date')
+    selected_date = today
+
+    if selected_date_str:
+        try:
+            selected_date = timezone.datetime.strptime(selected_date_str, '%Y-%m-%d').date()
+        except:
+            selected_date = today
+
+    showtimes = Showtime.objects.filter(
+        movie=movie,
+        start_time__date=selected_date
+    ).order_by('start_time').select_related('theater')
+
+    theaters_data = []
+    theaters = {showtime.theater for showtime in showtimes}
+
+    for theater in theaters:
+        categories = SeatCategory.objects.filter(
+            theater=theater
+        ).filter(
+            Q(movie=movie) | Q(movie__isnull=True)
+        )
+
+        theater_showtimes = showtimes.filter(theater=theater)
+
+        theaters_data.append({
+            'theater': theater,
+            'categories': categories,
+            'showtimes': theater_showtimes
+        })
+
+    context = {
+        'movie': movie,
+        'date_range': date_range,
+        'today': today,
+        'theaters_data': theaters_data,
+        'selected_date': selected_date,
+    }
+    return render(request, 'tickets/movie_details.html', context)
 
 
 def book_ticket(request, showtime_id):
