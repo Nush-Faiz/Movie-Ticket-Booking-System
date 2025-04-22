@@ -49,6 +49,7 @@
 
 
         body {
+            overflow-x: hidden;
             padding-top: 56px;
         }
         .movie-card {
@@ -239,12 +240,24 @@
           opacity: 0.7;
        }
 
+
+        .time-slot.sold-out .badge {
+            color: white;
+            background-color: #d32f2f;
+        }
+
        .time-slot.passed {
           background-color: #f5f5f5;
           color: #616161;
           border: 1px solid #e0e0e0;
           opacity: 0.5;
        }
+
+
+        .time-slot.passed .badge {
+            color: white;
+            background-color: #595555;
+        }
 
        .seats-left {
           position: absolute;
@@ -281,14 +294,14 @@
         <div class="container">
             <a class="navbar-brand" href="{% url 'home' %}">BookFlix</a>
             <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="{% url 'home' %}">Movies</a>
+                <a class="nav-link" href="{% url 'home' %}">Home</a>
+                <a class="nav-link" href="{% url 'home' %}#nowshowing">Now Playing</a>
+                <a class="nav-link" href="{% url 'home' %}#coming-soon">Upcoming Movies</a>
             </div>
         </div>
     </nav>
 
-    <div class="bg-warning text-dark text-center py-2 shadow-sm">
-    <strong style="font-size: 1.2rem;">🎬 Book Fast, Watch Happy! 🍿</strong>
-    </div>
+
 
     <div class="container mt-4">
         {% if messages %}
