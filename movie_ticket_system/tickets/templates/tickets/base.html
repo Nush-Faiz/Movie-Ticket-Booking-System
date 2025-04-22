@@ -209,6 +209,70 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        .time-slot {
+           display: inline-block;
+           padding: 10px 20px;
+           border-radius: 8px;
+           font-weight: 600;
+           text-align: center;
+           min-width: 110px;
+           transition: all 0.2s;
+           position: relative;
+       }
+
+       .time-slot.available {
+           background-color: #e8f5e9;
+           color: #2e7d32;
+           border: 1px solid #a5d6a7;
+       }
+
+       .time-slot.available:hover {
+          background-color: #c8e6c9;
+          transform: translateY(-2px);
+          box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+       }
+
+       .time-slot.sold-out {
+          background-color: #ffebee;
+          color: #c62828;
+          border: 1px solid #ef9a9a;
+          opacity: 0.7;
+       }
+
+       .time-slot.passed {
+          background-color: #f5f5f5;
+          color: #616161;
+          border: 1px solid #e0e0e0;
+          opacity: 0.5;
+       }
+
+       .seats-left {
+          position: absolute;
+          top: -8px;
+          right: -8px;
+          background: #4caf50;
+          color: white;
+          border-radius: 10px;
+          padding: 2px 6px;
+          font-size: 0.7rem;
+          font-weight: bold;
+       }
+
+       .btn-outline-primary.active {
+          background-color: #0d6efd;
+          color: white;
+          box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+      }
+
+      .card {
+          border-radius: 12px;
+          overflow: hidden;
+      }
+
+      .card-header {
+          border-bottom: none;
+      }
+
     </style>
 
 </head>

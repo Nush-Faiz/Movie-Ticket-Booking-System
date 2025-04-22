@@ -1,4 +1,5 @@
 {% extends 'tickets/base.html' %}
+{% load tz %}
 
 {% block content %}
 <div class="row mb-4">
@@ -21,43 +22,99 @@
     </div>
 </div>
 
-<h3>Available Showtimes</h3>
-<div class="list-group">
-    {% for showtime in showtimes %}
-    <div class="list-group-item">
-        <div class="d-flex justify-content-between align-items-center">
-            <div>
-                <h5>{{ showtime.theater.name }}</h5>
-                <p class="mb-1">{{ showtime.start_time|date:"D, M j, Y" }} at {{ showtime.start_time|time:"g:i A" }}</p>
-                <small class="text-muted">Available seats: {{ showtime.available_seats }}</small>
-                <div class="mt-2">
-                    <small class="fw-bold">Seat Categories:</small>
-                    <ul class="list-unstyled">
-                        {% for category in showtime.theater.seat_categories.all %}
-                           {% if category.movie == showtime.movie %}
-                           <li>{{ category.name }} - Rs.{{ category.price }}</li>
-                           {% endif %}
-                        {% endfor %}
+<div class="mb-4">
+    <h3 class="mb-3">Select Date</h3>
+    <div class="d-flex overflow-auto py-2" style="scrollbar-width: none;">
+        {% for date in date_range %}
+        <a href="?date={{ date|date:'Y-m-d' }}"
+           class="btn btn-outline-primary mx-1 {% if date == selected_date %}active{% endif %}"
+           style="white-space: nowrap; min-width: 100px;">
+            <div class="d-flex flex-column align-items-center">
+                <div class="fw-bold">
+                    {% if date == today %}
+                    TODAY
+                    {% else %}
+                    {{ date|date:"D"|upper }}
+                    {% endif %}
+                </div>
+                <div>{{ date|date:"M j" }}</div>
+            </div>
+        </a>
+        {% endfor %}
+    </div>
+</div>
 
-                        {% for category in showtime.theater.seat_categories.all %}
-                            {% if not category.movie %}
-                            <li>{{ category.name }} - Rs.{{ category.price }}</li>
-                            {% endif %}
-                        {% endfor %}
-                    </ul>
+{% if theaters_data %}
+<div class="mb-4">
+    <h3 class="mb-3">
+        {% if selected_date == today %}
+        <span class="text-danger">Today's</span> Showtimes
+        {% else %}
+        Showtimes for <span class="text-primary">{{ selected_date|date:"l, F j" }}</span>
+        {% endif %}
+    </h3>
+
+    {% for theater_info in theaters_data %}
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-dark text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-0">{{ theater_info.theater.name }}</h4>
+                    <small>{{ theater_info.theater.location }}</small>
                 </div>
             </div>
-            {% if showtime.has_passed %}
-                <span class="badge showtime-passed">Showtime Passed</span>
-            {% elif showtime.is_sold_out %}
-                <span class="badge sold-out">Sold Out</span>
-            {% else %}
-                <a href="{% url 'book_ticket' showtime.id %}" class="btn btn-success">Book Now</a>
-            {% endif %}
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3 pe-4 border-end">
+                    <h5 class="mb-3 text-uppercase small fw-bold">Seat Classes</h5>
+                    <div class="list-group list-group-flush">
+                        {% for category in theater_info.categories %}
+                        <div class="list-group-item py-2 px-0 border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="fw-medium">{{ category.name }}</span>
+                                <span class="badge bg-primary rounded-pill">Rs.{{ category.price }}</span>
+                            </div>
+                            <small class="text-muted">Comfortable {{ category.name|lower }} seating</small>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="col-md-9">
+                    <h5 class="mb-3 text-uppercase small fw-bold">Available Times</h5>
+                    <div class="d-flex flex-wrap gap-3">
+                        {% for showtime in theater_info.showtimes %}
+                        <div class="position-relative">
+                            {% if showtime.has_passed %}
+                            <div class="time-slot passed">
+                                {{ showtime.start_time|time:"g:i A" }}
+                                <span class="badge">Expired</span>
+                            </div>
+                            {% elif showtime.is_sold_out %}
+                            <div class="time-slot sold-out">
+                                {{ showtime.start_time|time:"g:i A" }}
+                                <span class="badge">Full</span>
+                            </div>
+                            {% else %}
+                            <a href="{% url 'book_ticket' showtime.id %}" class="time-slot available">
+                                {{ showtime.start_time|time:"g:i A" }}
+                                <span class="seats-left">{{ showtime.available_seats }} seats</span>
+                            </a>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
-    {% empty %}
-    <div class="alert alert-warning">No showtimes available</div>
     {% endfor %}
 </div>
+{% else %}
+<div class="alert alert-info shadow">
+    <h4 class="alert-heading">No Showtimes Available</h4>
+    <p>There are no showtimes scheduled for this date. Please check another day.</p>
+</div>
+{% endif %}
 {% endblock %}
