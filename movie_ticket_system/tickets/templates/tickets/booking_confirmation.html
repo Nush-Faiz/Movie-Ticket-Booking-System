@@ -12,7 +12,8 @@
             <p><strong>Time:</strong> {{ booking.showtime.start_time|date:"D, M j, Y" }} at {{ booking.showtime.start_time|time:"g:i A" }}</p>
             <p><strong>Seat Category:</strong> {{ booking.seat_category.name }}</p>
             <p><strong>Number of Seats:</strong> {{ booking.seats }}</p>
-            <p><strong>Price per ticket:</strong> Rs.{{ booking.seat_category.price }}</p>
+            <p><strong>Format:</strong> {{ booking.format }}</p>
+            <p><strong>Price per ticket:</strong> Rs.{% if booking.format == '2D' %}{{ booking.seat_category.price_2d }}{% else %}{{ booking.seat_category.price_3d }}{% endif %}</p>
             <p><strong>Total Price:</strong> Rs.{{ booking.total_price }}</p>
             <hr>
             <p><strong>Name:</strong> {{ booking.name }}</p>
