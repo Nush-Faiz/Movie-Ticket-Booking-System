@@ -32,7 +32,7 @@
                 <select class="form-select" id="seat_category" name="seat_category" required onchange="updatePrice()">
                     {% for category in seat_categories %}
                     <option value="{{ category.id }}" data-price="{{ category.price }}">
-                        {{ category.name }} - Rs.{{ category.price }}
+                        {{ category.name }} - Rs.{{ category.price }} ({{ movie_format }})
                     </option>
                     {% endfor %}
                 </select>
@@ -51,16 +51,15 @@
             </form>
 
             <script>
-                function updateTotal() {
-                    const seats = parseInt(document.getElementById('seats').value);
-                    const selectedOption = document.getElementById('seat_category').selectedOptions[0];
-                    const pricePerTicket = parseFloat(selectedOption.dataset.price);
-                    document.getElementById('totalPrice').textContent = (pricePerTicket * seats).toFixed(2);
-                }
+            function updateTotal() {
+            const seats = parseInt(document.getElementById('seats').value);
+            const pricePerTicket = parseFloat(
+            document.getElementById('seat_category').selectedOptions[0].dataset.price
+            );
+            document.getElementById('totalPrice').textContent = (pricePerTicket * seats).toFixed(2);
+            }
 
-                function updatePrice() {
-                    updateTotal();
-                }
+            document.addEventListener('DOMContentLoaded', updateTotal);
             </script>
         {% else %}
             <div class="alert alert-danger">

@@ -87,6 +87,9 @@ def movie_detail(request, movie_id):
             'showtimes': theater_showtimes
         })
 
+        for category in categories:
+            category.price = category.get_price_for_format(movie.format)
+
     context = {
         'movie': movie,
         'date_range': date_range,
@@ -102,6 +105,9 @@ def book_ticket(request, showtime_id):
     seat_categories = SeatCategory.objects.filter(
         Q(theater=showtime.theater) &
         (Q(movie=showtime.movie) | Q(movie__isnull=True)))
+
+    for category in seat_categories:
+        category.price = category.get_price_for_format(showtime.movie.format)
 
     if request.method == 'POST':
         name = request.POST.get('name')
@@ -141,7 +147,7 @@ def book_ticket(request, showtime_id):
                 messages.error(request, 'There was an error with your booking. Please check your information.')
 
 
-    return render(request, 'tickets/book_ticket.html', {'showtime': showtime,'seat_categories': seat_categories})
+    return render(request, 'tickets/book_ticket.html', {'showtime': showtime,'seat_categories': seat_categories,'movie_format': showtime.movie.format})
 
 def booking_confirmation(request, booking_id):
     booking = Booking.objects.get(id=booking_id)

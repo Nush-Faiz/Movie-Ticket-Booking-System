@@ -62,6 +62,9 @@
                     <h4 class="mb-0">{{ theater_info.theater.name }}</h4>
                     <small>{{ theater_info.theater.location }}</small>
                 </div>
+                <div class="badge bg-info text-dark">
+                    {{ movie.format }}
+                </div>
             </div>
         </div>
         <div class="card-body">
@@ -73,7 +76,7 @@
                         <div class="list-group-item py-2 px-0 border-0">
                             <div class="d-flex justify-content-between align-items-center">
                                 <span class="fw-medium">{{ category.name }}</span>
-                                <span class="badge bg-primary rounded-pill">Rs.{{ category.price }}</span>
+                                <span class="badge bg-primary rounded-pill">Rs.{{ category.price }} ({{ movie.format }})</span>
                             </div>
                             <small class="text-muted">Comfortable {{ category.name|lower }} seating</small>
                         </div>
