@@ -71,12 +71,24 @@ class Theater(models.Model):
 
 class SeatCategory(models.Model):
     name = models.CharField(max_length=50)
-    price = models.DecimalField(max_digits=6, decimal_places=2)
+    price_2d = models.DecimalField(max_digits=6, decimal_places=2)
+    price_3d = models.DecimalField(max_digits=6, decimal_places=2)
     theater = models.ForeignKey(Theater, on_delete=models.CASCADE, related_name='seat_categories')
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE, null=True, blank=True)
 
+    def get_price_for_format(self, format_type=None):
+        if format_type:
+            return self.price_3d if format_type == '3D' else self.price_2d
+        return self.price_2d
+
     def __str__(self):
-        return f"{self.name} ({self.theater.name}) - Rs.{self.price}"
+        return f"{self.name} (2D: Rs.{self.price_2d}, 3D: Rs.{self.price_3d})"
+
+    def __str__(self):
+        return f"{self.name} ({self.theater.name}) - 2D: Rs.{self.price_2d} | 3D: Rs.{self.price_3d}"
+
+    class Meta:
+        verbose_name_plural = "Seat Categories"
 
 class Showtime(models.Model):
     movie = models.ForeignKey(Movie, on_delete=models.CASCADE)
@@ -124,10 +136,17 @@ class Booking(models.Model):
     seats = models.IntegerField(default=1)
     booked_at = models.DateTimeField(auto_now_add=True)
     total_price = models.DecimalField(max_digits=8, decimal_places=2, default=0.00)
+    format = models.CharField(max_length=10, choices=[
+        ('2D', '2D'),
+        ('3D', '3D'),
+    ], default='2D')
 
     def save(self, *args, **kwargs):
+        if not self.format and self.showtime:
+            self.format = self.showtime.movie.format
         if self.seat_category:
-            self.total_price = self.seat_category.price * self.seats
+            price = self.seat_category.price_2d if self.format == '2D' else self.seat_category.price_3d
+            self.total_price = price * self.seats
         super().save(*args, **kwargs)
 
     def __str__(self):
