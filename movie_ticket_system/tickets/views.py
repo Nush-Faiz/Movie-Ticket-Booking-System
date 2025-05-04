@@ -126,7 +126,8 @@ def book_ticket(request, showtime_id):
                 phone=phone,
                 showtime=showtime,
                 seat_category=seat_category,
-                seats=seats
+                seats=seats,
+                format = showtime.movie.format
             )
             booking.full_clean()
 
