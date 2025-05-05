@@ -28,6 +28,10 @@
                                     <div><strong>Phone:</strong> {{ user.userprofile.phone }}</div>
                                     <a href="{% url 'edit_profile' %}"><i class="bi bi-pencil text-primary"></i></a>
                                 </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div><strong>Password:</strong> ********</div>
+                                    <a href="{% url 'password_change' %}" class="btn btn-sm btn-outline-primary">Change Password</a>
+                                </li>
                             {% else %}
                                 <li class="list-group-item d-flex justify-content-between align-items-center">
                                     <div><strong>Full Name:</strong> Not provided</div>

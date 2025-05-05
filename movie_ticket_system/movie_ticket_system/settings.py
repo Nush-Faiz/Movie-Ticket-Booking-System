@@ -143,4 +143,4 @@ else:
     EMAIL_USE_SSL = True
     EMAIL_HOST_USER = os.getenv('bookflixfeedback@gmail.com')
     EMAIL_HOST_PASSWORD = os.getenv('kacf goha aufy iqub')
-    DEFAULT_FROM_EMAIL = os.getenv('bookflixfeedback@gmail.com')
+    DEFAULT_FROM_EMAIL = 'bookflixfeedback@gmail.com'

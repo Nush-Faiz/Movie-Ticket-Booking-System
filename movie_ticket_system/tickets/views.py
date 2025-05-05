@@ -12,8 +12,12 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
 from .forms import ExtendedUserCreationForm, UserProfileForm
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import LogoutView
+from django.contrib.auth.views import LogoutView,PasswordResetView, PasswordResetDoneView
 from django.views.generic import TemplateView
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.models import User
 
 import logging
 logger = logging.getLogger(__name__)
@@ -311,3 +315,31 @@ class CustomLogoutView(LogoutView):
 
 def logout_confirm(request):
     return render(request, 'tickets/logout_confirm.html')
+
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'tickets/password_reset.html'
+
+    def form_valid(self, form):
+        email = form.cleaned_data['email']
+        users = User.objects.filter(email=email)
+
+        if users.exists():
+            user = users.first()
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+            self.request.session['reset_token'] = f"{uid}/{token}"
+            return super().form_valid(form)
+
+        return super().form_valid(form)
+
+
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'tickets/password_reset_done.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        token = self.request.session.get('reset_token', '')
+        context['reset_link'] = f"{self.request.build_absolute_uri('/')[:-1]}/reset/{token}"
+        return context
