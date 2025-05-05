@@ -8,6 +8,33 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login, authenticate
+
+def register(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            login(request, user)
+            messages.success(request, 'Registration successful!')
+            return redirect('home')
+    else:
+        form = UserCreationForm()
+    return render(request, 'tickets/register.html', {'form': form})
+
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, 'Login successful!')
+            return redirect('home')
+        else:
+            messages.error(request, 'Invalid username or password.')
+    return render(request, 'tickets/login.html')
 
 def home(request):
     search_query = request.GET.get('search', '')
@@ -148,7 +175,7 @@ def book_ticket(request, showtime_id):
                 messages.error(request, 'There was an error with your booking. Please check your information.')
 
 
-    return render(request, 'tickets/book_ticket.html', {'showtime': showtime,'seat_categories': seat_categories,'movie_format': showtime.movie.format})
+    return render(request, 'tickets/book_ticket.html', {'showtime': showtime,'seat_categories': seat_categories,'movie_format': showtime.movie.format, 'user': request.user})
 
 def booking_confirmation(request, booking_id):
     booking = Booking.objects.get(id=booking_id)
@@ -206,3 +233,11 @@ def feedback(request):
             messages.error(request, f'There was an error sending your feedback. Please try again later. Error: {str(e)}')
 
     return render(request, 'tickets/feedback.html')
+
+
+def user_profile(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    bookings = Booking.objects.filter(user=request.user).order_by('-booked_at')
+    return render(request, 'tickets/profile.html', {'bookings': bookings})
