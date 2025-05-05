@@ -12,6 +12,7 @@
         
             <form method="post">
                 {% csrf_token %}
+                {% if not user.is_authenticated %}
                 <div class="mb-3">
                     <label for="name" class="form-label">Your Name</label>
                     <input type="text" class="form-control" id="name" name="name" required>
@@ -27,6 +28,19 @@
                     <input type="tel" class="form-control" id="phone" name="phone" required pattern="[0-9]{10}" title="Please enter exactly 10 digits">
                     <small class="text-muted">Must be exactly 10 digits</small>
                 </div>
+                {% else %}
+                <div class="alert alert-info">
+                You're logged in as {{ user.username }}. Your booking will be associated with your account.
+                </div>
+                <input type="hidden" name="name" value="{{ user.username }}">
+                <input type="hidden" name="email" value="{{ user.email }}">
+                <div class="mb-3">
+                    <label for="phone" class="form-label">Your Phone Number</label>
+                    <input type="tel" class="form-control" id="phone" name="phone" required
+                        pattern="[0-9]{10}" title="Please enter exactly 10 digits">
+                    <small class="text-muted">Must be exactly 10 digits</small>
+                </div>
+                {% endif %}
                 <div class="mb-3">
                     <label for="seat_category" class="form-label">Seat Category</label>
                 <select class="form-select" id="seat_category" name="seat_category" required onchange="updateTotal()">
