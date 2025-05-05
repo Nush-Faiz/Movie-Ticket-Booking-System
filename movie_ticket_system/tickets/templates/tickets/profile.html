@@ -1,0 +1,49 @@
+{% extends 'tickets/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h2 class="mb-0">My Bookings</h2>
+                </div>
+                <div class="card-body">
+                    {% if bookings %}
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Movie</th>
+                                    <th>Theater</th>
+                                    <th>Showtime</th>
+                                    <th>Seats</th>
+                                    <th>Total</th>
+                                    <th>Booked On</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for booking in bookings %}
+                                <tr>
+                                    <td>{{ booking.showtime.movie.title }}</td>
+                                    <td>{{ booking.showtime.theater.name }}</td>
+                                    <td>{{ booking.showtime.start_time|date:"D, M j, Y g:i A" }}</td>
+                                    <td>{{ booking.seats }} {{ booking.seat_category.name }}</td>
+                                    <td>Rs.{{ booking.total_price }}</td>
+                                    <td>{{ booking.booked_at|date:"M j, Y g:i A" }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    {% else %}
+                    <div class="alert alert-info">
+                        You haven't made any bookings yet.
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
