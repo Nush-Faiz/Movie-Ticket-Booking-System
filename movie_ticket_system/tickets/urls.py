@@ -16,4 +16,6 @@ urlpatterns = [
     path('logout/', auth_views.LogoutView.as_view(), name='logout'),
     path('profile/', views.user_profile, name='profile'),
     path('profile/edit/', views.edit_profile, name='edit_profile'),
+    path('profile/bookings/', views.user_bookings, name='my_bookings'),
+    path('booking/<int:booking_id>/', views.booking_detail, name='booking_detail'),
 ]

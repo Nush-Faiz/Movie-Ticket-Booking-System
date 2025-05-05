@@ -1,0 +1,39 @@
+{% extends 'tickets/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white">
+            <h2>My Bookings</h2>
+        </div>
+        <div class="card-body">
+            {% if bookings %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Movie</th>
+                        <th>Theater</th>
+                        <th>Date</th>
+                        <th>Seats</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>{{ booking.showtime.movie.title }}</td>
+                        <td>{{ booking.showtime.theater.name }}</td>
+                        <td>{{ booking.showtime.start_time|date:"M d, Y" }}</td>
+                        <td>{{ booking.seats }} ({{ booking.seat_category.name }})</td>
+                        <td>Rs.{{ booking.total_price }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p>No bookings found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

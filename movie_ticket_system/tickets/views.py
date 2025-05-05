@@ -73,6 +73,20 @@ def edit_profile(request):
 
     return render(request, 'tickets/edit_profile.html', {'form': form})
 
+@login_required
+def user_profile(request):
+    return render(request, 'tickets/profile.html')
+
+@login_required
+def booking_detail(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    return render(request, 'tickets/booking_detail.html', {'booking': booking})
+
+@login_required
+def user_bookings(request):
+    bookings = Booking.objects.filter(user=request.user).order_by('-booked_at')
+    return render(request, 'tickets/my_bookings.html', {'bookings': bookings})
+
 def home(request):
     search_query = request.GET.get('search', '')
     genre = request.GET.get('genre')
