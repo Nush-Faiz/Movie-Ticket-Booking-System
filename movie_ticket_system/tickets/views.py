@@ -75,7 +75,11 @@ def edit_profile(request):
 
 @login_required
 def user_profile(request):
-    return render(request, 'tickets/profile.html')
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    bookings = Booking.objects.filter(user=request.user).order_by('-booked_at')
+    return render(request, 'tickets/profile.html', {'bookings': bookings})
 
 @login_required
 def booking_detail(request, booking_id):
@@ -84,7 +88,11 @@ def booking_detail(request, booking_id):
 
 @login_required
 def user_bookings(request):
-    bookings = Booking.objects.filter(user=request.user).order_by('-booked_at')
+    bookings = Booking.objects.filter(user=request.user).select_related(
+        'showtime__movie',
+        'showtime__theater',
+        'seat_category'
+    ).order_by('-booked_at')
     return render(request, 'tickets/my_bookings.html', {'bookings': bookings})
 
 def home(request):
@@ -189,11 +197,12 @@ def book_ticket(request, showtime_id):
 
     if request.method == 'POST':
         if request.user.is_authenticated:
+            user = request.user if request.user.is_authenticated else None
             try:
-                profile = request.user.userprofile
-                name = request.POST.get('name', profile.full_name)
-                email = request.POST.get('email', request.user.email)
-                phone = request.POST.get('phone', profile.phone)
+                user_profile = getattr(request.user, 'userprofile', None)
+                name = request.POST.get('name', user_profile.full_name )
+                email = request.POST.get('email', request.user.email )
+                phone = request.POST.get('phone', user_profile.phone )
             except UserProfile.DoesNotExist:
                 name = request.POST.get('name', request.user.username)
                 email = request.POST.get('email', request.user.email)
@@ -210,6 +219,7 @@ def book_ticket(request, showtime_id):
             validate_email(email)
 
             booking = Booking(
+                user=request.user if request.user.is_authenticated else None,
                 name=name,
                 email=email,
                 phone=phone,
@@ -295,14 +305,6 @@ def feedback(request):
             messages.error(request, f'There was an error sending your feedback. Please try again later. Error: {str(e)}')
 
     return render(request, 'tickets/feedback.html')
-
-
-def user_profile(request):
-    if not request.user.is_authenticated:
-        return redirect('login')
-
-    bookings = Booking.objects.filter(user=request.user).order_by('-booked_at')
-    return render(request, 'tickets/profile.html', {'bookings': bookings})
 
 class CustomLogoutView(LogoutView):
     next_page = 'home'

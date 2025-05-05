@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.core.validators import RegexValidator, EmailValidator
@@ -114,7 +115,7 @@ class Showtime(models.Model):
         return f"{self.movie.title} at {self.theater.name}"
 
 class Booking(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bookings',null=True, blank=True)
     name = models.CharField(max_length=100, default='Guest User')
     email = models.EmailField(default='guest@example.com',
                               validators = [
@@ -150,6 +151,9 @@ class Booking(models.Model):
         if self.seat_category:
             price = self.seat_category.price_2d if self.format == '2D' else self.seat_category.price_3d
             self.total_price = price * self.seats
+
+        if hasattr(self, '_user') and self._user.is_authenticated:
+            self.user = self._user
         super().save(*args, **kwargs)
 
     def __str__(self):
