@@ -206,7 +206,7 @@ def book_ticket(request, showtime_id):
             except UserProfile.DoesNotExist:
                 name = request.POST.get('name', request.user.username)
                 email = request.POST.get('email', request.user.email)
-                phone = request.POST.get('phone')
+                phone = request.POST.get('phone' ,request.user.phone)
         else:
             name = request.POST.get('name')
             email = request.POST.get('email')
