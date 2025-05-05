@@ -1,5 +1,5 @@
 from django import forms
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import UserCreationForm, UserChangeForm
 from django.contrib.auth.models import User
 from django.core.validators import validate_email, RegexValidator
 from .models import UserProfile
@@ -45,10 +45,69 @@ class ExtendedUserCreationForm(UserCreationForm):
             )
         return user
 
-class UserProfileForm(forms.ModelForm):
+class EditUsernameForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['username']
+        widgets = {
+            'username': forms.TextInput(attrs={'class': 'form-control'})
+        }
+
+class EditEmailForm(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ['email']
+        widgets = {
+            'email': forms.EmailInput(attrs={'class': 'form-control'})
+        }
+
+class EditFullNameForm(forms.ModelForm):
     class Meta:
         model = UserProfile
-        fields = ['full_name', 'phone']
+        fields = ['full_name']
         widgets = {
-            'phone': forms.TextInput(attrs={'pattern': '[0-9]{10}'})
+            'full_name': forms.TextInput(attrs={'class': 'form-control'})
         }
+
+class EditPhoneForm(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = ['phone']
+        widgets = {
+            'phone': forms.TextInput(attrs={
+                'class': 'form-control',
+                'pattern': '[0-9]{10}',
+                'title': 'Phone number must be exactly 10 digits'
+            })
+        }
+
+class UserProfileForm(forms.ModelForm):
+    email = forms.EmailField(required=True)
+    username = forms.CharField(max_length=150, required=True)
+
+    class Meta:
+        model = UserProfile
+        fields = ['full_name', 'phone', 'username', 'email']
+        widgets = {
+            'phone': forms.TextInput(attrs={'pattern': '[0-9]{10}'}),
+            'username': forms.TextInput(attrs={'class': 'form-control'}),
+            'email': forms.EmailInput(attrs={'class': 'form-control'}),
+            'full_name': forms.TextInput(attrs={'class': 'form-control'}),
+            'phone': forms.TextInput(attrs={'class': 'form-control'}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if self.instance and self.instance.user:
+            self.fields['email'].initial = self.instance.user.email
+            self.fields['username'].initial = self.instance.user.username
+
+    def save(self, commit=True):
+        profile = super().save(commit=False)
+        if commit:
+            profile.save()
+            user = profile.user
+            user.email = self.cleaned_data['email']
+            user.username = self.cleaned_data['username']
+            user.save()
+        return profile

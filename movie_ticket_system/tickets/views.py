@@ -10,10 +10,14 @@ from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
-from .forms import ExtendedUserCreationForm, UserProfileForm
+from .forms import ExtendedUserCreationForm, UserProfileForm, EditUsernameForm, EditEmailForm, EditFullNameForm, EditPhoneForm
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import LogoutView
+from django.contrib.auth.views import LogoutView,PasswordResetView, PasswordResetDoneView
 from django.views.generic import TemplateView
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.http import urlsafe_base64_encode
+from django.utils.encoding import force_bytes
+from django.contrib.auth.models import User
 
 import logging
 logger = logging.getLogger(__name__)
@@ -61,17 +65,125 @@ def edit_profile(request):
         profile = request.user.userprofile
     except UserProfile.DoesNotExist:
         profile = UserProfile(user=request.user)
+        profile.save()
+
+    form = None
 
     if request.method == 'POST':
         form = UserProfileForm(request.POST, instance=profile)
         if form.is_valid():
+            new_username = form.cleaned_data['username']
+            new_email = form.cleaned_data['email']
+            if User.objects.exclude(pk=request.user.pk).filter(username=new_username).exists():
+                messages.error(request, 'Username is already taken.')
+            elif User.objects.exclude(pk=request.user.pk).filter(email=new_email).exists():
+                messages.error(request, 'Email is already in use.')
+            else:
+                form.save()
+                user = request.user
+                user.username = new_username
+                user.email = new_email
+                user.save()
+                messages.success(request, 'Profile updated successfully!')
+                return redirect('profile')
+        else:
+            initial_data = {
+                'email': request.user.email,
+                'username': request.user.username,
+                'full_name': profile.full_name if hasattr(profile, 'full_name') else '',
+                'phone': profile.phone if hasattr(profile, 'phone') else ''
+            }
+
+            form = UserProfileForm(instance=profile, initial=initial_data)
+
+    context = {
+        'form': form,
+        'profile': profile
+    }
+
+    return render(request, 'tickets/edit_profile.html', context)
+
+
+@login_required
+def edit_username(request):
+    if request.method == 'POST':
+        form = EditUsernameForm(request.POST, instance=request.user)
+        if form.is_valid():
+            new_username = form.cleaned_data['username']
+            if User.objects.exclude(pk=request.user.pk).filter(username=new_username).exists():
+                messages.error(request, 'Username is already taken.')
+            else:
+                form.save()
+                messages.success(request, 'Username updated successfully!')
+                return redirect('profile')
+    else:
+        form = EditUsernameForm(instance=request.user)
+
+    return render(request, 'tickets/edit_field.html', {
+        'form': form,
+        'field_name': 'Username',
+        'back_url': 'profile'
+    })
+
+
+@login_required
+def edit_email(request):
+    if request.method == 'POST':
+        form = EditEmailForm(request.POST, instance=request.user)
+        if form.is_valid():
+            new_email = form.cleaned_data['email']
+            if User.objects.exclude(pk=request.user.pk).filter(email=new_email).exists():
+                messages.error(request, 'Email is already in use.')
+            else:
+                form.save()
+                messages.success(request, 'Email updated successfully!')
+                return redirect('profile')
+    else:
+        form = EditEmailForm(instance=request.user)
+
+    return render(request, 'tickets/edit_field.html', {
+        'form': form,
+        'field_name': 'Email',
+        'back_url': 'profile'
+    })
+
+
+@login_required
+def edit_full_name(request):
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    if request.method == 'POST':
+        form = EditFullNameForm(request.POST, instance=profile)
+        if form.is_valid():
             form.save()
-            messages.success(request, 'Profile updated successfully!')
+            messages.success(request, 'Full name updated successfully!')
             return redirect('profile')
     else:
-        form = UserProfileForm(instance=profile)
+        form = EditFullNameForm(instance=profile)
 
-    return render(request, 'tickets/edit_profile.html', {'form': form})
+    return render(request, 'tickets/edit_field.html', {
+        'form': form,
+        'field_name': 'Full Name',
+        'back_url': 'profile'
+    })
+
+
+@login_required
+def edit_phone(request):
+    profile, created = UserProfile.objects.get_or_create(user=request.user)
+    if request.method == 'POST':
+        form = EditPhoneForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Phone number updated successfully!')
+            return redirect('profile')
+    else:
+        form = EditPhoneForm(instance=profile)
+
+    return render(request, 'tickets/edit_field.html', {
+        'form': form,
+        'field_name': 'Phone Number',
+        'back_url': 'profile'
+    })
 
 @login_required
 def user_profile(request):
@@ -311,3 +423,31 @@ class CustomLogoutView(LogoutView):
 
 def logout_confirm(request):
     return render(request, 'tickets/logout_confirm.html')
+
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'tickets/password_reset.html'
+
+    def form_valid(self, form):
+        email = form.cleaned_data['email']
+        users = User.objects.filter(email=email)
+
+        if users.exists():
+            user = users.first()
+            token = default_token_generator.make_token(user)
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+
+            self.request.session['reset_token'] = f"{uid}/{token}"
+            return super().form_valid(form)
+
+        return super().form_valid(form)
+
+
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'tickets/password_reset_done.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        token = self.request.session.get('reset_token', '')
+        context['reset_link'] = f"{self.request.build_absolute_uri('/')[:-1]}/reset/{token}"
+        return context
