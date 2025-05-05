@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
+from .views import logout_confirm, CustomLogoutView
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -18,4 +19,6 @@ urlpatterns = [
     path('profile/edit/', views.edit_profile, name='edit_profile'),
     path('profile/bookings/', views.user_bookings, name='my_bookings'),
     path('booking/<int:booking_id>/', views.booking_detail, name='booking_detail'),
+    path('logout/confirm/', logout_confirm, name='logout_confirm'),
+    path('logout/', CustomLogoutView.as_view(), name='logout'),
 ]
