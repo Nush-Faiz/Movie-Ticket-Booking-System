@@ -3,34 +3,44 @@
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-10">
-            <div class="card shadow">
+        <div class="col-md-8">
+            <div class="card shadow-lg" style="min-height: 400px;">
                 <div class="card-header bg-dark text-white">
                     <h2 class="mb-0">My Profile</h2>
                 </div>
-                <div class="mb-5">
+                <div class="card-body p-5">
                         <h3 class="mb-4">Account Details</h3>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <p><strong>Username:</strong> {{ user.username }}</p>
-                                <p><strong>Email:</strong> {{ user.email }}</p>
-                            </div>
-                            <div class="col-md-6">
-                                {% if user.userprofile %}
-                                    <p><strong>Full Name:</strong> {{ user.userprofile.full_name }}</p>
-                                    <p><strong>Phone:</strong> {{ user.userprofile.phone }}</p>
-                                {% else %}
-                                    <p><strong>Full Name:</strong> Not provided</p>
-                                    <p><strong>Phone:</strong> Not provided</p>
-                                {% endif %}
-                            </div>
-                        </div>
-                        <div class="mt-3">
-                            <a href="{% url 'edit_profile' %}" class="btn btn-primary">
-                                <i class="bi bi-pencil"></i> Edit Profile
-                            </a>
-                        </div>
-                    </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div><strong>Username:</strong> {{ user.username }}</div>
+                                <a href="{% url 'edit_profile' %}"><i class="bi bi-pencil text-primary"></i></a>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <div><strong>Email:</strong> {{ user.email }}</div>
+                                <a href="{% url 'edit_profile' %}"><i class="bi bi-pencil text-primary"></i></a>
+                            </li>
+                            {% if user.userprofile %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div><strong>Full Name:</strong> {{ user.userprofile.full_name }}</div>
+                                    <a href="{% url 'edit_profile' %}"><i class="bi bi-pencil text-primary"></i></a>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div><strong>Phone:</strong> {{ user.userprofile.phone }}</div>
+                                    <a href="{% url 'edit_profile' %}"><i class="bi bi-pencil text-primary"></i></a>
+                                </li>
+                            {% else %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div><strong>Full Name:</strong> Not provided</div>
+                                    <a href="{% url 'edit_profile' %}"><i class="bi bi-pencil text-primary"></i></a>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div><strong>Phone:</strong> Not provided</div>
+                                    <a href="{% url 'edit_profile' %}"><i class="bi bi-pencil text-primary"></i></a>
+                                </li>
+                            {% endif %}
+                        </ul>
+
+                </div>
                 </div>
             </div>
         </div>
