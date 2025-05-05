@@ -10,17 +10,35 @@ from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
+from .forms import ExtendedUserCreationForm
+from .forms import UserProfileForm
+from .models import UserProfile
+from django.contrib.auth.decorators import login_required
+
+import logging
+logger = logging.getLogger(__name__)
 
 def register(request):
     if request.method == 'POST':
-        form = UserCreationForm(request.POST)
+        form = ExtendedUserCreationForm(request.POST)
+        logger.debug(f"Form data: {request.POST}")
         if form.is_valid():
+            logger.debug("Form is valid")
             user = form.save()
+            logger.debug(f"User created: {user}")
+            profile = user.userprofile
+            profile.full_name = form.cleaned_data['full_name']
+            profile.phone = form.cleaned_data['phone']
+            profile.save()
+
             login(request, user)
             messages.success(request, 'Registration successful!')
             return redirect('home')
+        else:
+            logger.debug(f"Form errors: {form.errors}")
+            messages.error(request, 'Please correct the errors below.')
     else:
-        form = UserCreationForm()
+        form = ExtendedUserCreationForm()
     return render(request, 'tickets/register.html', {'form': form})
 
 def user_login(request):
@@ -35,6 +53,25 @@ def user_login(request):
         else:
             messages.error(request, 'Invalid username or password.')
     return render(request, 'tickets/login.html')
+
+
+@login_required
+def edit_profile(request):
+    try:
+        profile = request.user.userprofile
+    except UserProfile.DoesNotExist:
+        profile = UserProfile(user=request.user)
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('profile')
+    else:
+        form = UserProfileForm(instance=profile)
+
+    return render(request, 'tickets/edit_profile.html', {'form': form})
 
 def home(request):
     search_query = request.GET.get('search', '')
@@ -137,9 +174,20 @@ def book_ticket(request, showtime_id):
         category.price = category.get_price_for_format(showtime.movie.format)
 
     if request.method == 'POST':
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        phone = request.POST.get('phone')
+        if request.user.is_authenticated:
+            try:
+                profile = request.user.userprofile
+                name = request.POST.get('name', profile.full_name)
+                email = request.POST.get('email', request.user.email)
+                phone = request.POST.get('phone', profile.phone)
+            except UserProfile.DoesNotExist:
+                name = request.POST.get('name', request.user.username)
+                email = request.POST.get('email', request.user.email)
+                phone = request.POST.get('phone')
+        else:
+            name = request.POST.get('name')
+            email = request.POST.get('email')
+            phone = request.POST.get('phone')
         seats = int(request.POST.get('seats', 1))
         seat_category_id = request.POST.get('seat_category')
         seat_category = SeatCategory.objects.get(id=seat_category_id)

@@ -2,7 +2,8 @@ from django.db import models
 from django.utils import timezone
 from django.core.validators import RegexValidator, EmailValidator
 from django.contrib.auth.models import User
-
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Movie(models.Model):
     title = models.CharField(max_length=200)
@@ -158,5 +159,19 @@ class Booking(models.Model):
     def __str__(self):
         user_type = self.user.username if self.user else "Guest"
         return f"{self.name} ({user_type}) booked {self.seats} {self.seat_category.name} seats for {self.showtime}"
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone = models.CharField(max_length=15, validators=[
+        RegexValidator(
+            regex=r'^\d{10}$',
+            message='Phone number must be 10 digits',
+            code='invalid_phone'
+        )
+    ])
+    full_name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.full_name} ({self.user.username})"
 
 
