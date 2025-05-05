@@ -286,6 +286,39 @@
           border-bottom: none;
       }
 
+       .dropdown-menu {
+        border: none;
+        box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+
+        .dropdown-item {
+            padding: 8px 15px;
+            transition: all 0.2s;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+            color: #0d6efd;
+        }
+
+        .dropdown-divider {
+            margin: 0.3rem 0;
+        }
+
+        .navbar-nav .nav-link {
+            padding: 8px 15px;
+        }
+
+        .navbar-brand {
+            font-weight: 600;
+        }
+
+        @media (min-width: 992px) {
+            .navbar-nav .dropdown:hover .dropdown-menu {
+                display: block;
+            }
+        }
+
     </style>
 
 </head>
