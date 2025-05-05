@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Movie, Showtime, Booking, SeatCategory
+from .models import Movie, Showtime, Booking, SeatCategory, UserProfile
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
@@ -10,10 +10,10 @@ from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import login, authenticate
-from .forms import ExtendedUserCreationForm
-from .forms import UserProfileForm
-from .models import UserProfile
+from .forms import ExtendedUserCreationForm, UserProfileForm
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LogoutView
+from django.views.generic import TemplateView
 
 import logging
 logger = logging.getLogger(__name__)
@@ -303,3 +303,9 @@ def user_profile(request):
 
     bookings = Booking.objects.filter(user=request.user).order_by('-booked_at')
     return render(request, 'tickets/profile.html', {'bookings': bookings})
+
+class CustomLogoutView(LogoutView):
+    next_page = 'home'
+
+def logout_confirm(request):
+    return render(request, 'tickets/logout_confirm.html')
