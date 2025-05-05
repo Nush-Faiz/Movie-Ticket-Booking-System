@@ -1,7 +1,10 @@
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.core.validators import RegexValidator, EmailValidator
-
+from django.contrib.auth.models import User
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 
 class Movie(models.Model):
     title = models.CharField(max_length=200)
@@ -112,6 +115,7 @@ class Showtime(models.Model):
         return f"{self.movie.title} at {self.theater.name}"
 
 class Booking(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='bookings',null=True, blank=True)
     name = models.CharField(max_length=100, default='Guest User')
     email = models.EmailField(default='guest@example.com',
                               validators = [
@@ -147,10 +151,31 @@ class Booking(models.Model):
         if self.seat_category:
             price = self.seat_category.price_2d if self.format == '2D' else self.seat_category.price_3d
             self.total_price = price * self.seats
+
+        if hasattr(self, '_user') and self._user.is_authenticated:
+            self.user = self._user
         super().save(*args, **kwargs)
 
     def __str__(self):
         category_name = self.seat_category.name if self.seat_category else "No Category"
         return f"{self.name} booked {self.seats} {category_name} seats for {self.showtime}"
+
+    def __str__(self):
+        user_type = self.user.username if self.user else "Guest"
+        return f"{self.name} ({user_type}) booked {self.seats} {self.seat_category.name} seats for {self.showtime}"
+
+class UserProfile(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    phone = models.CharField(max_length=15, validators=[
+        RegexValidator(
+            regex=r'^\d{10}$',
+            message='Phone number must be 10 digits',
+            code='invalid_phone'
+        )
+    ])
+    full_name = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.full_name} ({self.user.username})"
 
 

@@ -1,0 +1,55 @@
+{% extends 'tickets/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="card shadow">
+        <div class="card-header bg-dark text-white">
+            <h2>My Bookings</h2>
+        </div>
+        <div class="card-body">
+            {% if bookings %}
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Movie</th>
+                        <th>Theater</th>
+                        <th>Date</th>
+                        <th>Showtime</th>
+                        <th>Seats</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>{{ booking.showtime.movie.title }}</td>
+                        <td>{{ booking.showtime.theater.name }}</td>
+                        <td>{{ booking.showtime.start_time|date:"M d, Y" }}</td>
+                        <td>{{ booking.showtime.start_time|time:"g:i A" }}</td>
+                        <td>{{ booking.seats }} × ({{ booking.seat_category.name }} ({{ booking.format }}))</td>
+                        <td>Rs.{{ booking.total_price }}</td>
+                        <td>
+                            {% if booking.showtime.has_passed %}
+                            <span class="badge bg-secondary">Expired</span>
+                            {% else %}
+                            <span class="badge bg-success">Active</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="alert alert-info">
+                <h4 class="alert-heading">No Bookings Found</h4>
+                <p>You haven't made any bookings yet.</p>
+                <a href="{% url 'home' %}" class="btn btn-primary">
+                    Browse Movies
+                </a>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

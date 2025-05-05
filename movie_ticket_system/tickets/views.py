@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import Movie, Showtime, Booking, SeatCategory
+from .models import Movie, Showtime, Booking, SeatCategory, UserProfile
 from django.db.models import Q
 from django.core.exceptions import ValidationError
 from django.core.validators import validate_email
@@ -8,6 +8,92 @@ from django.core.mail import send_mail
 from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth import login, authenticate
+from .forms import ExtendedUserCreationForm, UserProfileForm
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LogoutView
+from django.views.generic import TemplateView
+
+import logging
+logger = logging.getLogger(__name__)
+
+def register(request):
+    if request.method == 'POST':
+        form = ExtendedUserCreationForm(request.POST)
+        logger.debug(f"Form data: {request.POST}")
+        if form.is_valid():
+            logger.debug("Form is valid")
+            user = form.save()
+            logger.debug(f"User created: {user}")
+            profile = user.userprofile
+            profile.full_name = form.cleaned_data['full_name']
+            profile.phone = form.cleaned_data['phone']
+            profile.save()
+
+            login(request, user)
+            messages.success(request, 'Registration successful!')
+            return redirect('home')
+        else:
+            logger.debug(f"Form errors: {form.errors}")
+            messages.error(request, 'Please correct the errors below.')
+    else:
+        form = ExtendedUserCreationForm()
+    return render(request, 'tickets/register.html', {'form': form})
+
+def user_login(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            messages.success(request, 'Login successful!')
+            return redirect('home')
+        else:
+            messages.error(request, 'Invalid username or password.')
+    return render(request, 'tickets/login.html')
+
+
+@login_required
+def edit_profile(request):
+    try:
+        profile = request.user.userprofile
+    except UserProfile.DoesNotExist:
+        profile = UserProfile(user=request.user)
+
+    if request.method == 'POST':
+        form = UserProfileForm(request.POST, instance=profile)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Profile updated successfully!')
+            return redirect('profile')
+    else:
+        form = UserProfileForm(instance=profile)
+
+    return render(request, 'tickets/edit_profile.html', {'form': form})
+
+@login_required
+def user_profile(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    bookings = Booking.objects.filter(user=request.user).order_by('-booked_at')
+    return render(request, 'tickets/profile.html', {'bookings': bookings})
+
+@login_required
+def booking_detail(request, booking_id):
+    booking = get_object_or_404(Booking, id=booking_id, user=request.user)
+    return render(request, 'tickets/booking_detail.html', {'booking': booking})
+
+@login_required
+def user_bookings(request):
+    bookings = Booking.objects.filter(user=request.user).select_related(
+        'showtime__movie',
+        'showtime__theater',
+        'seat_category'
+    ).order_by('-booked_at')
+    return render(request, 'tickets/my_bookings.html', {'bookings': bookings})
 
 def home(request):
     search_query = request.GET.get('search', '')
@@ -110,9 +196,21 @@ def book_ticket(request, showtime_id):
         category.price = category.get_price_for_format(showtime.movie.format)
 
     if request.method == 'POST':
-        name = request.POST.get('name')
-        email = request.POST.get('email')
-        phone = request.POST.get('phone')
+        if request.user.is_authenticated:
+            user = request.user if request.user.is_authenticated else None
+            try:
+                user_profile = getattr(request.user, 'userprofile', None)
+                name = request.POST.get('name', user_profile.full_name )
+                email = request.POST.get('email', request.user.email )
+                phone = request.POST.get('phone', user_profile.phone )
+            except UserProfile.DoesNotExist:
+                name = request.POST.get('name', request.user.username)
+                email = request.POST.get('email', request.user.email)
+                phone = request.POST.get('phone')
+        else:
+            name = request.POST.get('name')
+            email = request.POST.get('email')
+            phone = request.POST.get('phone')
         seats = int(request.POST.get('seats', 1))
         seat_category_id = request.POST.get('seat_category')
         seat_category = SeatCategory.objects.get(id=seat_category_id)
@@ -121,6 +219,7 @@ def book_ticket(request, showtime_id):
             validate_email(email)
 
             booking = Booking(
+                user=request.user if request.user.is_authenticated else None,
                 name=name,
                 email=email,
                 phone=phone,
@@ -148,7 +247,7 @@ def book_ticket(request, showtime_id):
                 messages.error(request, 'There was an error with your booking. Please check your information.')
 
 
-    return render(request, 'tickets/book_ticket.html', {'showtime': showtime,'seat_categories': seat_categories,'movie_format': showtime.movie.format})
+    return render(request, 'tickets/book_ticket.html', {'showtime': showtime,'seat_categories': seat_categories,'movie_format': showtime.movie.format, 'user': request.user})
 
 def booking_confirmation(request, booking_id):
     booking = Booking.objects.get(id=booking_id)
@@ -206,3 +305,9 @@ def feedback(request):
             messages.error(request, f'There was an error sending your feedback. Please try again later. Error: {str(e)}')
 
     return render(request, 'tickets/feedback.html')
+
+class CustomLogoutView(LogoutView):
+    next_page = 'home'
+
+def logout_confirm(request):
+    return render(request, 'tickets/logout_confirm.html')

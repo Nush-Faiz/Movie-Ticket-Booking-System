@@ -1,0 +1,92 @@
+{% extends 'tickets/base.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow">
+                <div class="card-header bg-dark text-white">
+                    <h2 class="mb-0">Create Your Account</h2>
+                </div>
+                <div class="card-body">
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <strong>Error!</strong> Please correct the following:
+                        <ul>
+                        {% for field, errors in form.errors.items %}
+                            {% for error in errors %}
+                                <li>{{ error }}</li>
+                            {% endfor %}
+                        {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <form method="post">
+                        {% csrf_token %}
+
+                        <div class="mb-3">
+                            <label for="id_username" class="form-label">Username</label>
+                            {{ form.username }}
+                            <small class="text-muted">Required. 150 characters or fewer. Letters, digits and @/./+/-/_ only.</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_full_name" class="form-label">Full Name</label>
+                            {{ form.full_name }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_email" class="form-label">Email</label>
+                            {{ form.email }}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_phone" class="form-label">Phone Number</label>
+                            {{ form.phone }}
+                            <small class="text-muted">Must be exactly 10 digits</small>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_password1" class="form-label">Password</label>
+                            {{ form.password1 }}
+                            {% if form.password1.errors %}
+                                <div class="text-danger">{{ form.password1.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="id_password2" class="form-label">Password Confirmation</label>
+                            {{ form.password2 }}
+                            {% if form.password2.errors %}
+                                <div class="text-danger">{{ form.password2.errors }}</div>
+                            {% endif %}
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">Register</button>
+                        <a href="{% url 'login' %}" class="btn btn-link">Already have an account? Login</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    input[type="text"],
+    input[type="email"],
+    input[type="tel"],
+    input[type="password"] {
+        width: 100%;
+        padding: 8px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+
+    .errorlist {
+        color: #dc3545;
+        padding-left: 0;
+        list-style: none;
+    }
+</style>
+{% endblock %}
