@@ -48,4 +48,5 @@ urlpatterns = [
     path('profile/edit/email/', views.edit_email, name='edit_email'),
     path('profile/edit/full-name/', views.edit_full_name, name='edit_full_name'),
     path('profile/edit/phone/', views.edit_phone, name='edit_phone'),
+    path('profile/delete/', views.delete_user, name='delete_user'),
 ]
