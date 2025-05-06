@@ -9,7 +9,7 @@ from django.conf import settings
 from django.utils import timezone
 from datetime import timedelta
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth import login, authenticate
+from django.contrib.auth import login, authenticate ,logout
 from .forms import ExtendedUserCreationForm, UserProfileForm, EditUsernameForm, EditEmailForm, EditFullNameForm, EditPhoneForm
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LogoutView,PasswordResetView, PasswordResetDoneView
@@ -18,6 +18,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
 from django.contrib.auth.models import User
+
 
 import logging
 logger = logging.getLogger(__name__)
@@ -184,6 +185,18 @@ def edit_phone(request):
         'field_name': 'Phone Number',
         'back_url': 'profile'
     })
+
+
+@login_required
+def delete_user(request):
+    if request.method == 'POST':
+        user = request.user
+        logout(request)
+        user.delete()
+        messages.success(request, 'Your account has been successfully deleted.')
+        return redirect('home')
+
+    return render(request, 'tickets/delete_user_confirm.html')
 
 @login_required
 def user_profile(request):

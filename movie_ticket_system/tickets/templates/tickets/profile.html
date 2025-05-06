@@ -3,37 +3,54 @@
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div class="card shadow-lg" style="min-height: 400px;">
                 <div class="card-header bg-dark text-white">
-                    <h2 class="mb-0">My Profile</h2>
+                        <h2 class="mb-0 ">
+                            <div class="d-flex align-items-center">
+                                <div class="profile-icon-container me-3">
+                                    <i class="bi bi-person-circle profile-icon"></i>
+                                </div>
+                                My Profile
+                            </div>
+                        </h2>
                 </div>
                 <div class="card-body p-5">
-                        <h3 class="mb-4">Account Details</h3>
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div><strong>Username:</strong> {{ user.username }}</div>
-                                <a href="{% url 'edit_username' %}"><i class="bi bi-pencil text-primary"></i></a>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div><strong>Email:</strong> {{ user.email }}</div>
-                                <a href="{% url 'edit_email' %}"><i class="bi bi-pencil text-primary"></i></a>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div><strong>Full Name:</strong> {{ user.userprofile.full_name|default:"Not provided" }}</div>
-                                <a href="{% url 'edit_full_name' %}"><i class="bi bi-pencil text-primary"></i></a>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div><strong>Phone:</strong> {{ user.userprofile.phone|default:"Not provided" }}</div>
-                                <a href="{% url 'edit_phone' %}"><i class="bi bi-pencil text-primary"></i></a>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <div><strong>Password:</strong> ********</div>
-                                <a href="{% url 'password_change' %}" class="btn btn-sm btn-outline-primary">Change Password</a>
-                            </li>
-                        </ul>
-
+                            <h3 class="mb-4 text-primary">Account Details</h3>
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div><strong>Username:</strong> {{ user.username }}</div>
+                                    <a href="{% url 'edit_username' %}"><i class="bi bi-pencil text-primary"></i></a>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div><strong>Email:</strong> {{ user.email }}</div>
+                                    <a href="{% url 'edit_email' %}"><i class="bi bi-pencil text-primary"></i></a>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div><strong>Full Name:</strong> {{ user.userprofile.full_name|default:"Not provided" }}</div>
+                                    <a href="{% url 'edit_full_name' %}"><i class="bi bi-pencil text-primary"></i></a>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div><strong>Phone:</strong> {{ user.userprofile.phone|default:"Not provided" }}</div>
+                                    <a href="{% url 'edit_phone' %}"><i class="bi bi-pencil text-primary"></i></a>
+                                </li>
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div><strong>Password:</strong> ********</div>
+                                    <a href="{% url 'password_change' %}" class="btn btn-sm btn-outline-primary">Change Password</a>
+                                </li>
+                            </ul>
                 </div>
+
+                <div class="card-body p-5 border-top pt-4">
+                    <h3 class="mb-4 text-primary">Account Actions</h3>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <p class="text-muted">Permanently delete your account and all associated data</p>
+                        </div>
+                        <a href="{% url 'delete_user' %}" class="btn btn-sm btn-outline-danger">
+                            <i class="bi bi-trash"></i> Delete Account
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
