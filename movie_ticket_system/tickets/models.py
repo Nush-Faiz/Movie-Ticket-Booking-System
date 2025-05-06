@@ -165,7 +165,7 @@ class Booking(models.Model):
         return f"{self.name} ({user_type}) booked {self.seats} {self.seat_category.name} seats for {self.showtime}"
 
 class UserProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='userprofile')
     phone = models.CharField(max_length=15, validators=[
         RegexValidator(
             regex=r'^\d{10}$',
